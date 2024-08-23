@@ -1,5 +1,6 @@
 {
   "id": "foundryvtt-tac-importer",
+  "name": "foundryvtt-tac-importer",
   "title": "FoundryVTT TAC Importer",
   "description": "The official TAC: TTRPG Adventure Creator project to import your content into FoundryVTT",
   "version": "#{VERSION}#",
