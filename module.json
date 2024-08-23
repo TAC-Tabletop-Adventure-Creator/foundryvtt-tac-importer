@@ -1,19 +1,18 @@
 {
-  "id": "module",
-  "title": "New Module",
-  "description": "",
+  "id": "foundryvtt-tac-importer",
+  "title": "FoundryVTT TAC Importer",
+  "description": "The official TAC: TTRPG Adventure Creator project to import your content into FoundryVTT",
   "version": "#{VERSION}#",
   "library": "false",
   "manifestPlusVersion": "1.2.0",
   "compatibility": {
-    "minimum": 10,
-    "verified": 10,
-    "maximum": 11
+    "minimum": 12,
+    "verified": 12
   },
   "authors": [
     {
-      "name": "The League of Extraordinary FVTT Developers",
-      "url": "https://github.com/League-of-Foundry-Developers",
+      "name": "TAC: TTRPG Adventure Creator",
+      "url": "https://github.com/Mandalorian007/foundryvtt-tac-importer/tree/master",
       "discord": "discordID#0001"
     }
   ],
