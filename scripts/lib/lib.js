@@ -1,1 +1,0 @@
-console.log('foundryvtt-tac-importer | Hello World!');
