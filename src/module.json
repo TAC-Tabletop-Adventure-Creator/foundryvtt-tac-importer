@@ -15,17 +15,14 @@
       "discord": "discordID#0001"
     }
   ],
-  "relationships": {
-    "systems": [],
-    "requires": []
-  },
-  "scripts": [
-    "tacimporter.js"
+  "esmodules": [
+    "index.js"
   ],
   "url": "https://github.com/Mandalorian007/foundryvtt-tac-importer",
+  "bugs": "https://github.com/Mandalorian007/foundryvtt-tac-importer/issues",
+  "license": "https://github.com/Mandalorian007/foundryvtt-tac-importer/releases/blob/main/LICENSE",
+  "readme": "https://github.com/Mandalorian007/foundryvtt-tac-importer/releases/blob/main/README.md",
   "manifest": "https://github.com/Mandalorian007/foundryvtt-tac-importer/releases/latest/download/module.json",
-  "license": "LICENSE",
-  "readme": "README.md",
   "media": [
     {
       "type": "icon",
