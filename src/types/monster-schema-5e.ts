@@ -2,19 +2,19 @@
 
 import {number, z} from 'zod';
 
-const sizeTypes = z.enum([
+export const sizeTypes = z.enum([
     'Tiny', 'Small', 'Medium',
     'Large', 'Huge', 'Gargantuan'
 ])
 
-const monsterTypes = z.enum([
+export const monsterTypes = z.enum([
     'Aberration', 'Beast', 'Celestial',
     'Construct', 'Dragon', 'Elemental',
     'Fey', 'Fiend', 'Giant', 'Humanoid',
     'Monstrosity', 'Ooze', 'Plant', 'Undead'
 ])
 
-const monsterSubTypes = z.enum([
+export const monsterSubTypes = z.enum([
     'demon', 'devil', 'shapechanger',
     'any race', 'dwarf', 'elf',
     'gnoll', 'gnome', 'goblinoid',
@@ -24,7 +24,7 @@ const monsterSubTypes = z.enum([
     'none'
 ])
 
-const abilitiesType = z.enum([
+export const abilitiesType = z.enum([
     "strength",
     "dexterity",
     "constitution",
@@ -33,14 +33,14 @@ const abilitiesType = z.enum([
     "charisma"
 ])
 
-const suggestedDamageTypes = [
+export const suggestedDamageTypes = [
     'acid', 'bludgeoning', 'cold',
     'fire', 'force', 'lightning',
     'necrotic', 'piercing', 'poison', 'psychic',
     'radiant', 'slashing', 'thunder', 'healing'
 ]
 
-const suggestedDamageResistancesOrImmunityTypes = [
+export const suggestedDamageResistancesOrImmunityTypes = [
     'acid', 'bludgeoning', 'cold',
     'fire', 'force', 'lightning',
     'necrotic', 'piercing', 'poison', 'psychic',
@@ -52,7 +52,7 @@ const suggestedDamageResistancesOrImmunityTypes = [
     'non magical bludgeoning, piercing, and slashing'
 ]
 
-const suggestedConditionTypes = [
+export const suggestedConditionTypes = [
     'blinded', 'charmed', 'deafened',
     'exhaustion', 'frightened', 'grappled',
     'incapacitated', 'invisible', 'paralyzed',
@@ -60,7 +60,7 @@ const suggestedConditionTypes = [
     'restrained', 'stunned', 'unconscious'
 ]
 
-const suggestedLanguages = [
+export const suggestedLanguages = [
     'Abyssal', 'Celestial', 'Common',
     'Deep Speech', 'Draconic', 'Druidic',
     'Dwarvish', 'Elvish', 'Giant',

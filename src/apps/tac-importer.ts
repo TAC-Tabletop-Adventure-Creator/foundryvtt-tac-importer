@@ -104,6 +104,15 @@ export class TacImporter extends Application {
 
                     if (foundryActor) {
                         Logger.info(`Actor "${tokenPlacement.name || tokenData.name}" already exists. Updating it...`);
+
+                        // Strip out existing features & actions (weapons)
+                        const existingItems = foundryActor.items
+                            .filter((item: any) => item.type === "feat" || item.type === "weapon")
+                            .map((item: any) => item.id);
+                        if (existingItems.length) {
+                            await foundryActor.deleteEmbeddedDocuments('Item', existingItems);
+                        }
+
                         await foundryActor.update(actorData);
                     } else {
                         Logger.info(`Creating new actor "${tokenPlacement.name || tokenData.name}"...`);
@@ -117,7 +126,6 @@ export class TacImporter extends Application {
                 }
             }
         }
-
         return foundryActors;
     };
 
