@@ -1,20 +1,18 @@
-// This is pulled from Tac-Backend please keep in sync
-
 import {number, z} from 'zod';
 
-export const sizeTypes = z.enum([
+const sizeTypes = z.enum([
     'Tiny', 'Small', 'Medium',
     'Large', 'Huge', 'Gargantuan'
 ])
 
-export const monsterTypes = z.enum([
+const monsterTypes = z.enum([
     'Aberration', 'Beast', 'Celestial',
     'Construct', 'Dragon', 'Elemental',
     'Fey', 'Fiend', 'Giant', 'Humanoid',
     'Monstrosity', 'Ooze', 'Plant', 'Undead'
 ])
 
-export const monsterSubTypes = z.enum([
+const monsterSubTypes = z.enum([
     'demon', 'devil', 'shapechanger',
     'any race', 'dwarf', 'elf',
     'gnoll', 'gnome', 'goblinoid',
@@ -24,7 +22,7 @@ export const monsterSubTypes = z.enum([
     'none'
 ])
 
-export const abilitiesType = z.enum([
+const abilitiesType = z.enum([
     "strength",
     "dexterity",
     "constitution",
@@ -33,14 +31,14 @@ export const abilitiesType = z.enum([
     "charisma"
 ])
 
-export const suggestedDamageTypes = [
+const suggestedDamageTypes = [
     'acid', 'bludgeoning', 'cold',
     'fire', 'force', 'lightning',
     'necrotic', 'piercing', 'poison', 'psychic',
     'radiant', 'slashing', 'thunder', 'healing'
 ]
 
-export const suggestedDamageResistancesOrImmunityTypes = [
+const suggestedDamageResistancesOrImmunityTypes = [
     'acid', 'bludgeoning', 'cold',
     'fire', 'force', 'lightning',
     'necrotic', 'piercing', 'poison', 'psychic',
@@ -52,7 +50,7 @@ export const suggestedDamageResistancesOrImmunityTypes = [
     'non magical bludgeoning, piercing, and slashing'
 ]
 
-export const suggestedConditionTypes = [
+const suggestedConditionTypes = [
     'blinded', 'charmed', 'deafened',
     'exhaustion', 'frightened', 'grappled',
     'incapacitated', 'invisible', 'paralyzed',
@@ -60,7 +58,7 @@ export const suggestedConditionTypes = [
     'restrained', 'stunned', 'unconscious'
 ]
 
-export const suggestedLanguages = [
+const suggestedLanguages = [
     'Abyssal', 'Celestial', 'Common',
     'Deep Speech', 'Draconic', 'Druidic',
     'Dwarvish', 'Elvish', 'Giant',
@@ -73,23 +71,37 @@ export const suggestedLanguages = [
 const featureType = z.object({
     name: z.string(),
     description: z.string(),
-}).describe('Generally, listed below challenge but before cantrips, spells, and actions.')
+}).describe('Will not include Spellcasting or Actions')
 
 const actionType = z.object({
     name: z.string(),
-    description: z.string(),
-    range: z.number().nullish(),
+    cost: z.number().nullish().describe('Will only be present on legendary actions'),
+    recharge: z.object({
+        min: z.number().nullish(),
+        max: z.number().nullish(),
+    }).nullish().nullish()
+        .describe('Typically in a format like: (Recharge 4-6) with the 4 being the min and the 6 being the max.'),
+    attackType: z.string().nullish() // Might be hard to identify this for charge abilities that aren't weapon attacks
+        .describe('Typically one of: Melee Weapon Attack | Ranged Weapon Attack'),
+    bonusToHit: z.number().nullish().describe('Typically expressed like: +4 to hit'),
+    reach: z.number().nullish(),
+    range: z.object({
+        min: z.number().nullish(),
+        max: z.number().nullish(),
+    }).nullish().describe('Typically noted as range 30/120 min is first number max is second.'),
+    savingThrow: z.object({
+        dc: number().describe('Will usually be a number right after the word: "DC"'),
+        ability: abilitiesType.describe('Will usually be followed by the term "saving throw" in this context.'),
+    }).nullish()
+        .describe('Typically, written like: "DC 13 strength saving throw" with the dc being 13 and the save ability being strength.'),
     damage: z.array(z.object({
         value: z.string().describe('Typically in a format like: 1d6 + 4'),
-        type: z.array(z.string()).describe(`Typically one of: ${suggestedDamageTypes.join(', ')}`),
-    })).nullish(),
-    save: z.object({
-        ability: abilitiesType,
-        dc: number()
-    }).nullish(),
-    recharge: z.number().nullish(),
-    cost: z.number().nullish().describe('Will only be present on legendary actions')
-}).describe('Must have at least one of range, damage, save, or cost')
+        type: z.array(z.string()).describe(`Typically one of: ${suggestedDamageTypes.join(', ')}. Additionally, damage is commonly found in multiple places. Make each record a new entry in the list`),
+    })).nullish()
+        .describe('Pay extremely close to damage values they are very important can usually be found written like: Hit: 28 (4d8+7) bludgeoning damage.'),
+    description: z.string(),
+}).describe('Parsing this section can be difficult. Content is frequently out of order as it is written in text and we are extracting detailed information. ' +
+    'Ensure to evaluate each action very carefully and extract all information.')
 
 const legendaryActionType = z.object({
     actionsPerTurn: z.number().min(1),
@@ -209,7 +221,7 @@ export const monsterSchema5e = z.object({
     spellcasting: spellcastingType.nullish()
         .describe('If a monster can use magic it probably has this'),
     innateSpellcasting: innateSpellcastingType.nullish()
-        .describe('This is uncommonly seen and usually spellcasting should be used'),
+        .describe('This is uncommonly seen and usually spellcasting should be used unless you see things in the x/day format.'),
     actions: z.array(actionType),
     legendaryActions: legendaryActionType.nullish()
 })

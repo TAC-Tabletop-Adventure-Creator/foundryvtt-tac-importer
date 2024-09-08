@@ -24,20 +24,18 @@ export class TacImporter extends Application {
 
         Logger.info(`Retrieving TAC Adventure Data`);
         const tacAdventureData = await loadAdventureData(adventureId);
-        Logger.info(`Tac Adventure Data: ${JSON.stringify(tacAdventureData)}`)
 
         Logger.info('Importing Scenes...');
         const scenes = await this.importScenes(tacAdventureData);
+        Logger.info(`Scene: \n${JSON.stringify(scenes[0], null, 2)}`);
 
-        Logger.info('Importing Journals...');
-        const journals = await this.importJournals(tacAdventureData);
+        Logger.info('Importing Journals and Notes...');
+        const journals = await this.importJournalsAndNotes(tacAdventureData, scenes);
 
-        Logger.info('Importing Actors...');
-        const actors = await this.importActors(tacAdventureData);
+        Logger.info('Importing Actors and Tokens...');
+        const actors = await this.importActorsAndTokens(tacAdventureData, scenes);
 
-        // Import Journal Entry Placements
-
-        // Import Actor Placements
+        Logger.info(`Loaded: ${scenes.length} Scenes, ${journals.length} Journals, and ${actors.length} Actors.`);
     }
 
     static async importScenes(tacAdventureData: AdventureData): Promise<Scene[]> {
@@ -49,6 +47,9 @@ export class TacImporter extends Application {
             const foundrySceneData = convertTacSceneToFoundryScene(tacScene, sceneFolder)
             if (foundryScene) {
                 Logger.info(`Scene "${tacScene.name}" already exists. Updating it...`);
+                // @ts-ignore
+                const existingTokenIds = foundryScene.tokens.map(token => token._id)
+                await foundryScene.deleteEmbeddedDocuments('Token', existingTokenIds)
                 await foundryScene.update(foundrySceneData);
             } else {
                 Logger.info(`Creating new scene "${tacScene.name}"...`);
@@ -63,7 +64,7 @@ export class TacImporter extends Application {
         return foundryScenes;
     }
 
-    static async importJournals(tacAdventureData: AdventureData): Promise<JournalEntry[]> {
+    static async importJournalsAndNotes(tacAdventureData: AdventureData, foundryScenes: Scene[]): Promise<JournalEntry[]> {
         // @ts-ignore
         let foundryJournal = game.journal.find(j => j.name === tacAdventureData.name);
         const foundryJournalData = convertTacNotesToFoundryJournal(tacAdventureData.notes, tacAdventureData.name);
@@ -78,7 +79,7 @@ export class TacImporter extends Application {
         return foundryJournal;
     }
 
-    static async importActors(tacAdventureData: AdventureData) {
+    static async importActorsAndTokens(tacAdventureData: AdventureData, foundryScenes: Scene[]) {
         const foundryActors: Actor[] = [];
         const actorFolder = await findOrCreateFolder(tacAdventureData.name, "Actor")
         for (const scene of tacAdventureData.scenes) {
@@ -120,6 +121,22 @@ export class TacImporter extends Application {
                     }
                     if (foundryActor) {
                         foundryActors.push(foundryActor);
+                        // Add token all TAC actors will have one linked token
+                        const foundryScene = foundryScenes.find(foundryScene => foundryScene.name === scene.name);
+                        if(foundryScene) {
+                            const tokenData = {
+                                name: foundryActor.name,
+                                x: tokenPlacement.x,
+                                y: tokenPlacement.y,
+                                texture: {
+                                    src: foundryActor.img,
+                                },
+                                disposition: CONST.TOKEN_DISPOSITIONS.HOSTILE,
+                                actorLink: true,
+                            }
+                            await foundryScene.createEmbeddedDocuments("Token", [tokenData])
+                        } else {Logger.warning(`Could not make the token: ${actorData.name} because scene: ${scene.name} couldn't be located.`);}
+
                     } else {
                         Logger.warning(`Unexpectedly, the Foundry Actor "${tokenPlacement.name || tokenData.name}" returned undefined.`);
                     }
@@ -135,7 +152,7 @@ export class TacImporter extends Application {
         // Manage the enabling and disabling of the import button based on adventure id provided
         html.find("#tac-export-adventure-id").on("keyup", () => {
             const result = html.find("#tac-export-adventure-id").val() as string || "";
-            // TODO temp 3dc3abcc-ac85-4d03-b054-8c66a7b2f79b
+            // TODO temp 1c0cf233-34b3-4c1f-a871-a75fd236733f
             if (validateUUIDv4(result)) {
                 html.find("#import-adventure-start").prop("disabled", false);
             } else {

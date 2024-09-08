@@ -7,14 +7,17 @@ export const convertTacSceneToFoundryScene = (tacScene: SceneType, sceneFolder: 
     return {
         name: tacScene.name,
         folder: sceneFolder,
+        padding: 0,
+        width: 3584,
+        height: 2048,
         background: {
             // TODO: Copy image to Foundry storage first
-            src: tacScene.imageUrl
+            src: tacScene.imageUrl,
         },
         initial: {
-            x: 3000,
-            y: 2300,
-            scale: 0.2844000461382298
-        }
+            x: 2250,
+            y: 1000,
+            scale: .3
+        },
     }
 }

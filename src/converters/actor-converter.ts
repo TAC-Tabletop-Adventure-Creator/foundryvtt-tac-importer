@@ -48,6 +48,7 @@ const getDnd5eActorData = (tokenPlacement: TokenPlacementType, tokenData: TokenT
         }
     })) || [];
 
+    // TODO we don't really handle spell melee or range attacks atm.
     const actionItems = statBlock.actions?.map(action => {
         return {
             name: action.name,
@@ -56,17 +57,116 @@ const getDnd5eActorData = (tokenPlacement: TokenPlacementType, tokenData: TokenT
                 description: {
                     value: action.description
                 },
+                activation: {
+                    type: "action",
+                    cost: action.cost || 1
+                },
+                range: {
+                    value: action.range?.min || action.reach || 5,
+                    long: action.range?.max || undefined,
+                    units: "ft"
+                },
+                damage: {
+                    parts: action.damage?.map(dmg => [
+                        dmg.value,
+                        dmg.type.join(', ')
+                    ])
+                },
+                save: {
+                  ability: action.savingThrow?.ability,
+                  dc: action.savingThrow?.dc,
+                  scaling: action.savingThrow ? 'flat' : undefined
+                },
+                attackBonus: action.bonusToHit,
+                ability: action.attackType?.toLowerCase().includes("melee weapon attack") ? "str" :
+                    action.attackType?.toLowerCase().includes("ranged weapon attack") ? "dex" :
+                        undefined,
+                actionType: action.attackType?.toLowerCase().includes("melee weapon attack") ? "mwak" :
+                    action.attackType?.toLowerCase().includes("ranged weapon attack") ? "rwak" :
+                        action.savingThrow ? "save" :
+                            "other",
+                proficient: true
             }
         };
     }) || [];
+
+    // TODO spells aren't implemented this is wrong.
+    const spellData = {
+        "spell0": statBlock.spellcasting?.spells.cantrips
+            ? { spells: statBlock.spellcasting?.spells.cantrips?.join(', ') }
+            : undefined,
+        "spell1": statBlock.spellcasting?.spells.level1Slots
+            ? {
+                value: statBlock.spellcasting.spells.level1Slots,
+                max: statBlock.spellcasting.spells.level1Slots,
+                spells: statBlock.spellcasting?.spells.level1?.join(', ')
+            }
+            : undefined,
+        "spell2": statBlock.spellcasting?.spells.level2Slots
+            ? {
+                value: statBlock.spellcasting.spells.level2Slots,
+                max: statBlock.spellcasting.spells.level2Slots,
+                spells: statBlock.spellcasting?.spells.level2?.join(', ')
+            }
+            : undefined,
+        "spell3": statBlock.spellcasting?.spells.level3Slots
+            ? {
+                value: statBlock.spellcasting.spells.level3Slots,
+                max: statBlock.spellcasting.spells.level3Slots,
+                spells: statBlock.spellcasting?.spells.level3?.join(', ')
+            }
+            : undefined,
+        "spell4": statBlock.spellcasting?.spells.level4Slots
+            ? {
+                value: statBlock.spellcasting.spells.level4Slots,
+                max: statBlock.spellcasting.spells.level4Slots,
+                spells: statBlock.spellcasting?.spells.level4?.join(', ')
+            }
+            : undefined,
+        "spell5": statBlock.spellcasting?.spells.level5Slots
+            ? {
+                value: statBlock.spellcasting.spells.level5Slots,
+                max: statBlock.spellcasting.spells.level5Slots,
+                spells: statBlock.spellcasting?.spells.level5?.join(', ')
+            }
+            : undefined,
+        "spell6": statBlock.spellcasting?.spells.level6Slots
+            ? {
+                value: statBlock.spellcasting.spells.level6Slots,
+                max: statBlock.spellcasting.spells.level6Slots,
+                spells: statBlock.spellcasting?.spells.level6?.join(', ')
+            }
+            : undefined,
+        "spell7": statBlock.spellcasting?.spells.level7Slots
+            ? {
+                value: statBlock.spellcasting.spells.level7Slots,
+                max: statBlock.spellcasting.spells.level7Slots,
+                spells: statBlock.spellcasting?.spells.level7?.join(', ')
+            }
+            : undefined,
+        "spell8": statBlock.spellcasting?.spells.level8Slots
+            ? {
+                value: statBlock.spellcasting.spells.level8Slots,
+                max: statBlock.spellcasting.spells.level8Slots,
+                spells: statBlock.spellcasting?.spells.level8?.join(', ')
+            }
+            : undefined,
+        "spell9": statBlock.spellcasting?.spells.level9Slots
+            ? {
+                value: statBlock.spellcasting.spells.level9Slots,
+                max: statBlock.spellcasting.spells.level9Slots,
+                spells: statBlock.spellcasting?.spells.level9?.join(', ')
+            }
+            : undefined,
+    }
 
     /*
     5e npc model: https://github.com/foundryvtt/dnd5e/blob/master/module/data/actor/npc.mjs
     built on creature template: https://github.com/foundryvtt/dnd5e/blob/4.0.x/module/data/actor/templates/creature.mjs#L34
     built on common model: https://github.com/foundryvtt/dnd5e/blob/4.0.x/module/data/actor/templates/common.mjs#L26
 
-     TODO saves are not yet confirmed to work need better test data
-     TODO damage resistances, vulnerabilities, and immunities as well as condition immunities not yet tested
+    TODO saves are not yet confirmed to work need better test data
+    TODO damage resistances, vulnerabilities, and immunities as well as condition immunities not yet tested
      */
     return {
         system: {
@@ -105,6 +205,9 @@ const getDnd5eActorData = (tokenPlacement: TokenPlacementType, tokenData: TokenT
                     perception: statBlock.senses.passivePerception,
                     special: statBlock.senses.telepathy ? 'Telepathy' : undefined,
                 },
+                spellcasting: abilityToAbbrev(statBlock.spellcasting?.spellcastingAbility),
+                spelldc: statBlock.spellcasting?.spellSaveDC,
+                spellattack: statBlock.spellcasting?.spellAttack,
             },
             abilities: {
                 str: {
@@ -232,6 +335,7 @@ const getDnd5eActorData = (tokenPlacement: TokenPlacementType, tokenData: TokenT
                 cr: statBlock.challenge,
                 xp: { value: statBlock.xp },
             },
+            spells: spellData
         },
         items: [
             ...featureItems,
@@ -257,3 +361,16 @@ const sizeAbbreviationMapping = {
     Huge: 'huge',
     Gargantuan: 'grg'
 }
+
+const abilityToAbbrev = (ability?: string): string | undefined => {
+    const mapping: Record<string, string> = {
+        "strength": "str",
+        "dexterity": "dex",
+        "constitution": "con",
+        "intelligence": "int",
+        "wisdom": "wis",
+        "charisma": "cha"
+    };
+
+    return ability ? mapping[ability.toLowerCase()] : undefined;
+};
