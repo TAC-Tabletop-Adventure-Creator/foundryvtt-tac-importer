@@ -77,10 +77,11 @@ const getDnd5eActorData = (tokenPlacement: TokenPlacementType, tokenData: TokenT
                   dc: action.savingThrow?.dc,
                   scaling: action.savingThrow ? 'flat' : undefined
                 },
-                attackBonus: action.bonusToHit,
-                ability: action.attackType?.toLowerCase().includes("melee weapon attack") ? "str" :
-                    action.attackType?.toLowerCase().includes("ranged weapon attack") ? "dex" :
-                        undefined,
+                attack: {
+                    bonus: action.bonusToHit,
+                    flat: true
+                },
+                ability: "none",
                 actionType: action.attackType?.toLowerCase().includes("melee weapon attack") ? "mwak" :
                     action.attackType?.toLowerCase().includes("ranged weapon attack") ? "rwak" :
                         action.savingThrow ? "save" :

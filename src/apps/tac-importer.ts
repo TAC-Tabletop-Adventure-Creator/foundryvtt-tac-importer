@@ -140,6 +140,7 @@ export class TacImporter extends Application {
                         foundryActor = await Actor.create(actorData);
                     }
                     if (foundryActor) {
+                        Logger.info(`Actor Data: \n ${JSON.stringify(foundryActor.items, null, 2)}`);
                         foundryActors.push(foundryActor);
                         // Add token all TAC actors will have one linked token
                         const foundryScene = foundryScenes.find(foundryScene => foundryScene.name === scene.name);
