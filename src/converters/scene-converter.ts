@@ -7,15 +7,16 @@ export const convertTacSceneToFoundryScene = (tacScene: SceneType, sceneFolder: 
     return {
         name: tacScene.name,
         folder: sceneFolder,
-        padding: 0,
+        padding: 0.0,
         width: 3584,
         height: 2048,
+        //grid: 50, //TODO this is broken for some weird reason.
         background: {
             // TODO: Copy image to Foundry storage first
             src: tacScene.imageUrl,
         },
         initial: {
-            x: 2250,
+            x: 1900,
             y: 1000,
             scale: .3
         },
