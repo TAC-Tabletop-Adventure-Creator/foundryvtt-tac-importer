@@ -18,7 +18,7 @@ export const convertTacSceneToFoundryScene = (tacScene: SceneType, sceneFolder: 
         initial: {
             x: 1900,
             y: 1000,
-            scale: .3
+            scale: .5
         },
     }
     // TODO annoyingly this is the way we must set the gridSize and the typescript we are currently using is wrong somehow.

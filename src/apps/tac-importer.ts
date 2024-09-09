@@ -27,7 +27,6 @@ export class TacImporter extends Application {
 
         Logger.info('Importing Scenes...');
         const scenes = await this.importScenes(tacAdventureData);
-        Logger.info(`Scene: \n${JSON.stringify(scenes[0], null, 2)}`);
 
         Logger.info('Importing Journals and Notes...');
         const journals = await this.importJournalsAndNotes(tacAdventureData, scenes);
@@ -50,6 +49,9 @@ export class TacImporter extends Application {
                 // @ts-ignore
                 const existingTokenIds = foundryScene.tokens.map(token => token._id)
                 await foundryScene.deleteEmbeddedDocuments('Token', existingTokenIds)
+                // @ts-ignore
+                const existingNoteIds = foundryScene.notes.map(note => note._id)
+                await foundryScene.deleteEmbeddedDocuments('Note', existingNoteIds)
                 await foundryScene.update(foundrySceneData);
             } else {
                 Logger.info(`Creating new scene "${tacScene.name}"...`);
@@ -76,6 +78,26 @@ export class TacImporter extends Application {
             Logger.info(`Creating new journal "${tacAdventureData.name}"...`);
             foundryJournal = await JournalEntry.create(foundryJournalData);
         }
+        // Add notes to scenes.
+        for(const scene of tacAdventureData.scenes) {
+            for (const notePlacement of scene.notePlacements) {
+                const foundryScene = foundryScenes.find(foundryScene => foundryScene.name === scene.name);
+                const note = tacAdventureData.notes.find(n => n.id === notePlacement.noteRef);
+                // @ts-ignore
+                const journalPage = foundryJournal.pages.find((page) => page.name === note?.name);
+                if(foundryScene) {
+                    await foundryScene.createEmbeddedDocuments("Note", [{
+                        entryId: foundryJournal._id,
+                        pageId: journalPage._id,
+                        x: notePlacement.x,
+                        y: notePlacement.y,
+                        text: journalPage.name,
+                    }])
+                } else {Logger.warning(`Could not make the token: ${note?.name} because scene: ${scene.name} couldn't be located.`);}
+            }
+        }
+        // Show notes by default
+        Logger.info(`Scene Data: ${JSON.stringify(foundryScenes[0], null, 2)}`);
         return foundryJournal;
     }
 
