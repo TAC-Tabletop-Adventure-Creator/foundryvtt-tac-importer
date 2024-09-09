@@ -96,8 +96,6 @@ export class TacImporter extends Application {
                 } else {Logger.warning(`Could not make the token: ${note?.name} because scene: ${scene.name} couldn't be located.`);}
             }
         }
-        // Show notes by default
-        Logger.info(`Scene Data: ${JSON.stringify(foundryScenes[0], null, 2)}`);
         return foundryJournal;
     }
 
@@ -154,6 +152,7 @@ export class TacImporter extends Application {
                                     src: foundryActor.img,
                                 },
                                 disposition: CONST.TOKEN_DISPOSITIONS.HOSTILE,
+                                actorId: foundryActor._id,
                                 actorLink: true,
                             }
                             await foundryScene.createEmbeddedDocuments("Token", [tokenData])
