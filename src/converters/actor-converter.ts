@@ -79,9 +79,9 @@ const getDnd5eActorData = (tokenPlacement: TokenPlacementType, tokenData: TokenT
                 },
                 attack: {
                     bonus: action.bonusToHit,
-                    flat: true
+                    flat: true // prevent proficiency bonus from apply to hit roll
                 },
-                ability: "none",
+                ability: "none", // This is none to prevent ability mod on the to hit and damage rolls
                 actionType: action.attackType?.toLowerCase().includes("melee weapon attack") ? "mwak" :
                     action.attackType?.toLowerCase().includes("ranged weapon attack") ? "rwak" :
                         action.savingThrow ? "save" :
