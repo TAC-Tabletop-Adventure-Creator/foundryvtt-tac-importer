@@ -147,6 +147,7 @@ export class TacImporter extends Application {
                         if(foundryScene) {
                             const tokenData = {
                                 name: foundryActor.name,
+                                displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
                                 x: tokenPlacement.x,
                                 y: tokenPlacement.y,
                                 texture: {
@@ -174,7 +175,6 @@ export class TacImporter extends Application {
         // Manage the enabling and disabling of the import button based on adventure id provided
         html.find("#tac-export-adventure-id").on("keyup", () => {
             const result = html.find("#tac-export-adventure-id").val() as string || "";
-            // TODO temp 1c0cf233-34b3-4c1f-a871-a75fd236733f
             if (validateUUIDv4(result)) {
                 html.find("#import-adventure-start").prop("disabled", false);
             } else {
