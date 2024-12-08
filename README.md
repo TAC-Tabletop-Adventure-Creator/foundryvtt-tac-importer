@@ -39,6 +39,9 @@ Then build your project so your dist directory is created with the resources:
 pnpm run build
 ```
 
+There is a github action that will build and release a new version when a new tag is pushed.
+see `.github/workflows/main.yml` for more details.
+
 ### Requirements
 
 - Node.js >= 22.5.0
