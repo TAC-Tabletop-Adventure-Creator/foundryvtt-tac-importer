@@ -39,8 +39,22 @@ Then build your project so your dist directory is created with the resources:
 pnpm run build
 ```
 
-There is a github action that will build and release a new version when a new tag is pushed.
-see `.github/workflows/main.yml` for more details.
+### Releasing
+
+To create a new release:
+
+1. Update the version number in both `src/module.json` and `package.json`
+2. Commit your changes
+3. Create and push a new version tag:
+```shell
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin v1.0.0
+```
+
+This will trigger the GitHub Action workflow which will:
+- Build the project
+- Create a new GitHub release
+- Upload the module files as release assets
 
 ### Requirements
 
