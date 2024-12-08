@@ -1,0 +1,52 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'  # Specify the Node.js version
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build the project
+        run: pnpm run build
+
+      - name: Prepare Release Assets
+        run: |
+          mkdir -p foundryvtt-tac-importer
+          cp src/module.json foundryvtt-tac-importer/module.json
+          cp -r dist/* foundryvtt-tac-importer/
+          cd foundryvtt-tac-importer
+          zip -r ../foundryvtt-tac-importer.zip .  # Create a zip file named after the project
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          files: foundryvtt-tac-importer.zip  # Upload the created zip file
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
