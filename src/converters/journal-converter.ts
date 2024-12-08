@@ -1,11 +1,10 @@
 import { ConstructorDataType } from "@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes";
-import { NoteType } from "../types/tac-types";
 
 type JournalEntryCreationData = ConstructorDataType<foundry.data.JournalEntryData> | (ConstructorDataType<foundry.data.JournalEntryData> & Record<string, unknown>);
 
-export const convertTacNotesToFoundryJournal = (tacNotes: NoteType[], adventureName: string): JournalEntryCreationData => {
+export const convertTacNotesToFoundryJournal = (tacAdventure:any): JournalEntryCreationData => {
     // Map each NoteType to a JournalPage
-    const journalPages = tacNotes.map(note => ({
+    const journalPages = tacAdventure.notes.map((note: any) => ({
         name: note.name,
         text: {
             content: `<p>${note.description}</p>`
@@ -13,7 +12,7 @@ export const convertTacNotesToFoundryJournal = (tacNotes: NoteType[], adventureN
     }));
 
     return {
-        name: adventureName,
+        name: tacAdventure.adventure.title,
         pages: journalPages
     };
 };

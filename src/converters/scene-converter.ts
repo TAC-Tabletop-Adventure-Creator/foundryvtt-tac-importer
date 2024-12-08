@@ -1,25 +1,25 @@
 import { ConstructorDataType } from "@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes";
-import { SceneType } from "../types/tac-types";
+import { Logger } from "../classes/logging";
 
 type SceneCreationData = ConstructorDataType<foundry.data.SceneData> | (ConstructorDataType<foundry.data.SceneData> & Record<string, unknown>);
 
-export const convertTacSceneToFoundryScene = (tacScene: SceneType, sceneFolder: Folder | undefined): SceneCreationData => {
+export const convertSceneToFoundryScene = (tacScene: any, sceneFolder: Folder | undefined): SceneCreationData => {
     const sceneData = {
         name: tacScene.name,
         folder: sceneFolder,
         padding: 0.0,
-        width: 3584,
-        height: 2048,
+        width: 1024,
+        height: 1024,
         grid: { size: 50 },
         background: {
             // TODO: Copy image to Foundry storage first
             src: tacScene.imageUrl,
         },
-        initial: {
-            x: 1900,
-            y: 1000,
+        /*initial: {
+            x: 500,
+            y: 500,
             scale: .5
-        },
+        },*/
     }
     // TODO annoyingly this is the way we must set the gridSize and the typescript we are currently using is wrong somehow.
     // @ts-ignore
