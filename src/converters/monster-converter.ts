@@ -128,14 +128,18 @@ const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
                 type: spell.activation || "action",
                 value: 1
             },
-            duration: { // TODO something wrong here
-                value: "", //spell.duration || "",
-                units: "inst"
+            duration: {
+                value: durationAbbreviationMapping[spell.duration] || "",
+                units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration] || "inst"
             },
-            target: {// TODO enhance targeting logic
-                affects: {
-                    type: "creature", 
-                    count: "1", 
+            target: {
+                affects: spell.areaOfEffect ? {
+                    type: "area",
+                    count: spell.areaOfEffect.size,
+                    choice: false
+                } : {
+                    type: "creature",
+                    count: "1",
                     choice: false
                 },
                 template: {
@@ -144,7 +148,7 @@ const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
                 }
             },
             range: {
-                value: spell.range || "",
+                value: spell.range || 0,
                 units: "ft"
             },
             level: spell.level || 0,
@@ -159,20 +163,24 @@ const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
                 mode: "prepared",
                 prepared: true
             },
-            properties: spell.components.map((component: any) => {
-                switch(component) {
-                    case "V": return "vocal";
-                    case "S": return "somatic"; 
-                    case "M": return "material";
-                    default: return null;
-                }
-            }).filter(Boolean) || [],
+            properties: [
+                ...(spell.components?.map((component: any) => {
+                    switch(component) {
+                        case "V": return "vocal";
+                        case "S": return "somatic";
+                        case "M": return "material";
+                        default: return null;
+                    }
+                }).filter(Boolean) || []),
+                ...(spell.ritual ? ["ritual"] : []),
+                ...(spell.concentration ? ["concentration"] : [])
+            ],
             activities: {
                 dnd5eactivity000: {
-                    type: "save",
+                    type: ["melee", "range", "aoe"].includes(spell.attackType) ? "attack" : (spell.savingThrow ? "save" : "utility"),
                     activation: {
                         type: spell.activation || "action",
-                        value: null,
+                        value: 1,
                         override: false
                     },
                     consumption: {
@@ -182,8 +190,8 @@ const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
                         spellSlot: true
                     },
                     duration: {
-                        units: "inst", //TODO does this need to change????
-                        concentration: spell.concentration,
+                        units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration] || "inst",
+                        concentration: spell.concentration || false,
                         override: false
                     },
                     effects: [],
@@ -192,7 +200,12 @@ const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
                     },
                     target: {
                         prompt: true,
-                        template: {
+                        template: spell.areaOfEffect ? {
+                            type: spell.areaOfEffect.type,
+                            size: spell.areaOfEffect.size,
+                            contiguous: true,
+                            units: "ft"
+                        } : {
                             contiguous: false,
                             units: "ft"
                         },
@@ -207,8 +220,22 @@ const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
                         recovery: []
                     },
                     damage: {
-                        onSave: "none",
-                        parts: []
+                        onSave: spell.savingThrow?.effect || "none",
+                        parts: spell.damage?.map((dmg: any) => ({
+                            number: dmg.numDice,
+                            denomination: dmg.diceSize,
+                            bonus: "",
+                            types: [dmg.type],
+                            custom: {
+                                enabled: false,
+                                formula: ""
+                            },
+                            scaling: {
+                                mode: "whole",
+                                number: 1,
+                                formula: ""
+                            }
+                        })) || []
                     },
                     save: spell.savingThrow ? {
                         ability: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility],
@@ -412,6 +439,38 @@ const schoolAbbreviationMapping: Record<string, string> = {
     illusion: "ill",
     necromancy: "nec",
     transmutation: "trs"
+};
+
+const durationAbbreviationMapping: Record<string, string> = {
+    "Instantaneous": "",
+    "Until Dispelled": "perm",
+    "Special": "spec",
+    "1 round": "1",
+    "1 minute": "1",
+    "10 minutes": "10",
+    "1 hour": "1",
+    "8 hours": "8",
+    "24 hours": "24",
+    "1 day": "24",
+    "7 days": "7",
+    "10 days": "10",
+    "30 days": "30"
+};
+
+const durationUnitsMapping: Record<string, string> = {
+    "Instantaneous": "inst",
+    "Until Dispelled": "perm",
+    "Special": "spec",
+    "1 round": "round",
+    "1 minute": "min",
+    "10 minutes": "min",
+    "1 hour": "hour",
+    "8 hours": "hour",
+    "24 hours": "day",
+    "1 day": "day",
+    "7 days": "day",
+    "10 days": "day",
+    "30 days": "day"
 };
 
 const getProficiencyBonus = (challengeRating: number) => {
