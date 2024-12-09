@@ -52,7 +52,7 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
             proficient: true,
             activities: {
                 dnd5eactivity000: {
-                    type: "attack",
+                    type: action.attackType ? "attack" : "utility",
                     activation: {
                         type: action.actionType,
                         value: 1,
@@ -61,15 +61,17 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
                         value: action.range.normal,
                         units: 'ft'
                     },
-                    attack: {
-                        ability: getAbilityAttackBonus(statBlock, action),
-                        flat: false,
-                        type: {
-                            value: action.attackType === 'melee' ? 'mwak' :
-                                action.attackType === 'range' ? 'rwak' : 'other',
-                            classification: "weapon"
+                    ...(action.attackType && {
+                        attack: {
+                            ability: getAbilityAttackBonus(statBlock, action),
+                            flat: false,
+                            type: {
+                                value: action.attackType === 'melee' ? 'mwak' :
+                                    action.attackType === 'range' ? 'rwak' : 'other',
+                                classification: "weapon"
+                            }
                         }
-                    }
+                    })
                 }
             }
         }
