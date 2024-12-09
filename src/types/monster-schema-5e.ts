@@ -1,227 +1,360 @@
-import {number, z} from 'zod';
+import {z} from 'zod';
 
-const sizeTypes = z.enum([
-    'Tiny', 'Small', 'Medium',
-    'Large', 'Huge', 'Gargantuan'
-])
+// Base enums
+const abilityEnum = z.enum([
+    'Strength',
+    'Dexterity',
+    'Constitution',
+    'Intelligence',
+    'Wisdom',
+    'Charisma',
+]);
 
-const monsterTypes = z.enum([
-    'Aberration', 'Beast', 'Celestial',
-    'Construct', 'Dragon', 'Elemental',
-    'Fey', 'Fiend', 'Giant', 'Humanoid',
-    'Monstrosity', 'Ooze', 'Plant', 'Undead'
-])
+const sizeEnum = z.enum(['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan']);
 
-const monsterSubTypes = z.enum([
-    'demon', 'devil', 'shapechanger',
-    'any race', 'dwarf', 'elf',
-    'gnoll', 'gnome', 'goblinoid',
-    'grimlock', 'human', 'human, shapechanger',
-    'kobold', 'lizardfolk', 'merfolk',
-    'orc', 'sahuagin', 'titan',
-    'none'
-])
+const typeEnum = z.enum([
+    'Aberration',
+    'Beast',
+    'Celestial',
+    'Construct',
+    'Dragon',
+    'Elemental',
+    'Fey',
+    'Fiend',
+    'Giant',
+    'Humanoid',
+    'Monstrosity',
+    'Ooze',
+    'Plant',
+    'Undead',
+]);
 
-const abilitiesType = z.enum([
-    "strength",
-    "dexterity",
-    "constitution",
-    "intelligence",
-    "wisdom",
-    "charisma"
-])
+const subTypeEnum = z.enum([
+    'demon',
+    'devil',
+    'shapechanger',
+    'any race',
+    'dwarf',
+    'elf',
+    'gnoll',
+    'gnome',
+    'goblinoid',
+    'grimlock',
+    'human',
+    'kobold',
+    'lizardfolk',
+    'merfolk',
+    'orc',
+    'sahuagin',
+    'titan',
+    'none',
+]);
 
-const suggestedDamageTypes = [
-    'acid', 'bludgeoning', 'cold',
-    'fire', 'force', 'lightning',
-    'necrotic', 'piercing', 'poison', 'psychic',
-    'radiant', 'slashing', 'thunder', 'healing'
-]
+const movementTypeEnum = z.enum(['walk', 'climb', 'fly', 'swim', 'burrow']);
 
-const suggestedDamageResistancesOrImmunityTypes = [
-    'acid', 'bludgeoning', 'cold',
-    'fire', 'force', 'lightning',
-    'necrotic', 'piercing', 'poison', 'psychic',
-    'radiant', 'slashing', 'thunder',
-    'slashing from nonmagical attacks',
-    'piercing from nonmagical attacks',
-    'bludgeoning from nonmagical attacks',
-    'damage from spells',
-    'non magical bludgeoning, piercing, and slashing'
-]
+const skillEnum = z.enum([
+    'acrobatics',
+    'animalHandling',
+    'arcana',
+    'athletics',
+    'deception',
+    'history',
+    'insight',
+    'intimidation',
+    'investigation',
+    'medicine',
+    'nature',
+    'perception',
+    'performance',
+    'persuasion',
+    'religion',
+    'sleightOfHand',
+    'stealth',
+    'survival',
+]);
 
-const suggestedConditionTypes = [
-    'blinded', 'charmed', 'deafened',
-    'exhaustion', 'frightened', 'grappled',
-    'incapacitated', 'invisible', 'paralyzed',
-    'petrified', 'poisoned', 'prone',
-    'restrained', 'stunned', 'unconscious'
-]
+const proficiencyLevelEnum = z.enum(['None', 'Proficient', 'Expertise']);
 
-const suggestedLanguages = [
-    'Abyssal', 'Celestial', 'Common',
-    'Deep Speech', 'Draconic', 'Druidic',
-    'Dwarvish', 'Elvish', 'Giant',
-    'Gnomish', 'Goblin', 'Halfling', 'Infernal',
-    'Orc', 'Primordial', 'Sylvan', 'Undercommon',
-    'Auran', 'Aquan', 'Ignan', 'Terran',
-    'Sphinx', 'telepathy', 'any language', 'all',
-]
+const actionTypeEnum = z.enum(['action', 'bonus', 'reaction']);
 
-const featureType = z.object({
+const attackTypeEnum = z.enum(['melee', 'ranged']);
+
+const schoolEnum = z.enum([
+    "Abjuration",
+    "Conjuration", 
+    "Divination",
+    "Enchantment",
+    "Evocation",
+    "Illusion",
+    "Necromancy",
+    "Transmutation",
+]);
+
+const castTimeTypeEnum = z.enum([
+    "action",
+    "bonus",
+    "hour",
+    "hours", 
+    "minute",
+    "minutes",
+    "reaction",
+]);
+
+const rangeTypeEnum = z.enum([
+    "Self",
+    "Touch",
+    "Sight",
+    "Unlimited",
+    "feet",
+    "mile",
+    "miles",
+]);
+
+const componentEnum = z.enum([
+    "M",
+    "S",
+    "V",
+]);
+
+const durationTypeEnum = z.enum([
+    "Instantaneous",
+    "Special",
+    "UntilDispelled",
+    "days",
+    "hour",
+    "hours",
+    "minute",
+    "minutes",
+    "round",
+]);
+
+const areaTypeEnum = z.enum([
+    "cone",
+    "cube",
+    "cylinder", 
+    "line",
+    "sphere",
+]);
+
+const damageTypeEnum = z.enum([
+    "acid",
+    "bludgeoning",
+    "cold",
+    "fire",
+    "force",
+    "lightning",
+    "necrotic",
+    "piercing",
+    "poison",
+    "psychic",
+    "radiant",
+    "slashing",
+    "thunder",
+]);
+
+const scalingTypeEnum = z.enum([
+    "Cantrip",
+    "Level",
+    "None",
+]);
+
+// Reusable schemas
+const diceSchema = z.object({
+    number: z.number().nullish(),
+    size: z.number().nullish(),
+    flat: z.number().nullish(),
+});
+
+const areaOfEffectSchema = z.object({
+    type: areaTypeEnum,
+    size: z.number(),
+});
+
+const savingThrowSchema = z.object({
+    ability: abilityEnum,
+    dc: z.number(),
+});
+
+// Monster & Spell Schema
+export type Spell = z.infer<typeof spellSchema>;
+export const spellSchema = z.object({
     name: z.string(),
-    description: z.string(),
-}).describe('Will not include Spellcasting or Actions')
-
-const actionType = z.object({
-    name: z.string(),
-    cost: z.number().nullish().describe('Will only be present on legendary actions'),
-    recharge: z.object({
-        min: z.number().nullish(),
-        max: z.number().nullish(),
-    }).nullish().nullish()
-        .describe('Typically in a format like: (Recharge 4-6) with the 4 being the min and the 6 being the max.'),
-    attackType: z.string().nullish() // Might be hard to identify this for charge abilities that aren't weapon attacks
-        .describe('Typically one of: Melee Weapon Attack | Ranged Weapon Attack'),
-    bonusToHit: z.number().nullish().describe('Typically expressed like: +4 to hit'),
-    reach: z.number().nullish(),
+    level: z.number(),
+    school: schoolEnum,
+    castTime: z.object({
+        value: z.number(),
+        type: castTimeTypeEnum,
+    }),
     range: z.object({
-        min: z.number().nullish(),
-        max: z.number().nullish(),
-    }).nullish().describe('Typically noted as range 30/120 min is first number max is second.'),
-    savingThrow: z.object({
-        dc: number().describe('Will usually be a number right after the word: "DC"'),
-        ability: abilitiesType.describe('Will usually be followed by the term "saving throw" in this context.'),
-    }).nullish()
-        .describe('Typically, written like: "DC 13 strength saving throw" with the dc being 13 and the save ability being strength.'),
-    damage: z.array(z.object({
-        value: z.string().describe('Typically in a format like: 1d6 + 4'),
-        type: z.array(z.string()).describe(`Typically one of: ${suggestedDamageTypes.join(', ')}. Additionally, damage is commonly found in multiple places. Make each record a new entry in the list`),
-    })).nullish()
-        .describe('Pay extremely close to damage values they are very important can usually be found written like: Hit: 28 (4d8+7) bludgeoning damage.'),
+        type: rangeTypeEnum,
+        value: z.number().nullish(),
+    }),
+    components: z.array(componentEnum),
+    material: z.string().nullish(),
+    duration: z.object({
+        type: durationTypeEnum,
+        value: z.number().nullish(),
+    }),
+    concentration: z.boolean(),
+    ritual: z.boolean(),
     description: z.string(),
-}).describe('Parsing this section can be difficult. Content is frequently out of order as it is written in text and we are extracting detailed information. ' +
-    'Ensure to evaluate each action very carefully and extract all information.')
-
-const legendaryActionType = z.object({
-    actionsPerTurn: z.number().min(1),
-    actions: z.array(actionType)
-})
-
-const innateSpellcastingType = z.object({
-    spellcastingAbility: abilitiesType,
-    spellSaveDC: z.number(),
-    spellAttack: z.number(),
-    spells: z.array(z.object({
-        name: z.string(),
-        timesPerDay: z.enum(['At will', '1/day', '2/day', '3/day', '4/day', '5/day'])
-    })).describe('List of innate spells with usage limits')
-})
-
-const spellcastingType = z.object({
-    spellcastingAbility: abilitiesType,
-    spellSaveDC: z.number(),
-    spellAttack: z.number(),
-    spells: z.object({
-        cantrips: z.array(z.string()).nullish(),
-        level1: z.array(z.string()).nullish(),
-        level1Slots: z.number().nullish(),
-        level2: z.array(z.string()).nullish(),
-        level2Slots: z.number().nullish(),
-        level3: z.array(z.string()).nullish(),
-        level3Slots: z.number().nullish(),
-        level4: z.array(z.string()).nullish(),
-        level4Slots: z.number().nullish(),
-        level5: z.array(z.string()).nullish(),
-        level5Slots: z.number().nullish(),
-        level6: z.array(z.string()).nullish(),
-        level6Slots: z.number().nullish(),
-        level7: z.array(z.string()).nullish(),
-        level7Slots: z.number().nullish(),
-        level8: z.array(z.string()).nullish(),
-        level8Slots: z.number().nullish(),
-        level9: z.array(z.string()).nullish(),
-        level9Slots: z.number().nullish(),
-    }).describe('Spell slots by level with available spells.')
-})
-
-export type Monster5eType = z.infer<typeof monsterSchema5e>
-export const monsterSchema5e = z.object({
-    name: z.string(),
-    size: sizeTypes,
-    type: monsterTypes,
-    subType: monsterSubTypes,
-    armorClass: z.number().min(1),
-    hitPoints: z.number(),
-    hitPointFormula: z.string().describe('typically in a format like 5d8 + 16'),
-    movement: z.object({
-        walk: z.number().min(0).nullish()
-            .describe('Any speed with no description is a walk speed.'),
-        climb: z.number().min(0).nullish(),
-        fly: z.number().min(0).nullish(),
-        swim: z.number().min(0).nullish(),
-        burrow: z.number().min(0).nullish(),
-        hover: z.boolean().nullish()
-    }),
-    attributes: z.object({
-        strength: z.number().min(1).max(30),
-        dexterity: z.number().min(1).max(30),
-        constitution: z.number().min(1).max(30),
-        intelligence: z.number().min(1).max(30),
-        wisdom: z.number().min(1).max(30),
-        charisma: z.number().min(1).max(30),
-    }),
-    savingThrows: z.record(abilitiesType, z.number()).nullish(),
-    skills: z.object({
-        acrobatics: z.number().min(1).max(30).nullish(),
-        animalHandling: z.number().min(1).max(30).nullish(),
-        arcana: z.number().min(1).max(30).nullish(),
-        athletics: z.number().min(1).max(30).nullish(),
-        deception: z.number().min(1).max(30).nullish(),
-        history: z.number().min(1).max(30).nullish(),
-        insight: z.number().min(1).max(30).nullish(),
-        intimidation: z.number().min(1).max(30).nullish(),
-        investigation: z.number().min(1).max(30).nullish(),
-        medicine: z.number().min(1).max(30).nullish(),
-        nature: z.number().min(1).max(30).nullish(),
-        perception: z.number().min(1).max(30).nullish(),
-        performance: z.number().min(1).max(30).nullish(),
-        persuasion: z.number().min(1).max(30).nullish(),
-        religion: z.number().min(1).max(30).nullish(),
-        sleightOfHand: z.number().min(1).max(30).nullish(),
-        stealth: z.number().min(1).max(30).nullish(),
-        survival: z.number().min(1).max(30).nullish(),
+    higherLevel: z.array(z.string()).nullish(),
+    attackType: attackTypeEnum.nullish(),
+    dc: abilityEnum.nullish(),
+    areaOfEffect: z.object({
+        type: areaTypeEnum,
+        size: z.number(),
     }).nullish(),
-    damageResistances: z.array(z.string())
-        .describe(`Typically, one of: ${suggestedDamageResistancesOrImmunityTypes.join(', ')}`)
-        .nullish(),
-    damageImmunities: z.array(z.string())
-        .describe(`Typically, one of: ${suggestedDamageResistancesOrImmunityTypes.join(', ')}`)
-        .nullish(),
-    damageVulnerabilities: z.array(z.string())
-        .describe(`Typically, one of: ${suggestedDamageTypes.join(', ')}`)
-        .nullish(),
-    conditionImmunities: z.array(z.string())
-        .describe(`Typically, one of: ${suggestedConditionTypes.join(', ')}`)
-        .nullish(),
-    senses: z.object({
-        passivePerception: z.number().min(0).nullish(),
-        darkvision: z.number().min(0).nullish(),
-        blindsight: z.number().min(0).nullish(),
-        tremorsense: z.number().min(0).nullish(),
-        truesight: z.number().min(0).nullish(),
-        telepathy: z.boolean().nullish()
-    }),
-    languages: z.array(z.string()).describe(`Generally, language is one of: ${suggestedLanguages.join(', ')}`),
-    challenge: z.number()
-        .describe('may be expressed in fraction format like 1/4 just convert to decimal'),
-    xp: z.number() //Zod doesn't support enum of number. Maybe consider parsing them as strings
-        .describe('Should be one of: 10, 25, 50, 100, 200, 450, 700, 1100, 1800, 2300, 2900, 3900, 11500, 13000, 15000, 18000, 20000, 22000, 25000, 33000, 41000, 50000, 62000, 75000'),
-    features: z.array(featureType),
-    spellcasting: spellcastingType.nullish()
-        .describe('If a monster can use magic it probably has this'),
-    innateSpellcasting: innateSpellcastingType.nullish()
-        .describe('This is uncommonly seen and usually spellcasting should be used unless you see things in the x/day format.'),
-    actions: z.array(actionType),
-    legendaryActions: legendaryActionType.nullish()
-})
+    damageOrHeal: z.object({
+        type: damageTypeEnum.nullish(),
+        dice: diceSchema,
+        scalingType: scalingTypeEnum,
+        numScalingDice: z.number().nullish(),
+        sizeScalingDice: z.number().nullish(),
+        scalingFlatMod: z.number().nullish(),
+        includeMod: z.boolean().describe('default to false'),
+        isHeal: z.boolean().describe('default to false'),
+    }).nullish(),
+});
+
+export type DnDFiveOneEStatBlock = z.infer<typeof monsterSchema5e>;
+export const monsterSchema5e = z.object({
+    name: z.string().describe('Monster name'),
+    size: sizeEnum.describe('Monster size category'),
+    type: typeEnum.describe('Monster type'),
+    subType: subTypeEnum.nullish().describe('Monster subtype, if any'),
+    alignment: z.string().describe('Alignment of the monster'),
+    armorClass: z.number().describe('Armor Class value'),
+    hitPoints: z.number().describe('Total hit points'),
+    hitPointFormula: z.string().describe('Hit point formula, e.g., "5d8 + 16"'),
+    movement: z
+        .array(
+            z.object({
+                type: movementTypeEnum.describe('Movement type'),
+                speed: z.number().describe('Speed in feet'),
+            })
+        )
+        .describe('Movement speeds and types'),
+    canHover: z
+        .boolean()
+        .nullish()
+        .describe('Indicates if the creature can hover; defaults to false'),
+    attributes: z
+        .array(
+            z.object({
+                name: abilityEnum.describe('Ability name'),
+                value: z.number().describe('Ability score value'),
+                saveProficiencyLevel: proficiencyLevelEnum.describe('Proficiency level for the save which will be none by default.'),
+            })
+        )
+        .describe('Six different ability scores and should always have all 6 defined.'),
+    skills: z
+        .array(
+            z.object({
+                name: skillEnum.describe('Skill name'),
+                skillProficiencyLevel: proficiencyLevelEnum.describe('Proficiency level for the skill which will be none by default.'),
+            })
+        )
+        .nullish()
+        .describe('Skill proficiencies'),
+    damageResistances: z
+        .array(z.string())
+        .nullish()
+        .describe(
+            'Damage types the monster is resistant to, including special types like "nonmagical weapons", "silvered weapons"'
+        ),
+    damageImmunities: z
+        .array(z.string())
+        .nullish()
+        .describe(
+            'Damage types the monster is immune to, including special types like "nonmagical weapons", "silvered weapons"'
+        ),
+    damageVulnerabilities: z
+        .array(z.string())
+        .nullish()
+        .describe(
+            'Damage types the monster is vulnerable to, including special types like "nonmagical weapons", "silvered weapons"'
+        ),
+    conditionImmunities: z
+        .array(z.string())
+        .nullish()
+        .describe('Conditions the monster is immune to, e.g., "blinded", "poisoned"'),
+    senses: z
+        .object({
+            passive: z.number().describe('Passive Perception score'),
+            darkvision: z.number().nullish().describe('Darkvision range in feet'),
+            blindsight: z.number().nullish().describe('Blindsight range in feet'),
+            tremorsense: z.number().nullish().describe('Tremorsense range in feet'),
+            truesight: z.number().nullish().describe('Truesight range in feet'),
+            telepathy: z.boolean().nullish().describe('Indicates if the monster has telepathy'),
+        })
+        .describe('Sensory abilities'),
+    languages: z
+        .array(z.string())
+        .describe('Languages the monster knows, e.g., "Common", "Draconic"'),
+    challenge: z
+        .number()
+        .describe('Challenge rating; convert fractions to decimals (e.g., "1/4" becomes 0.25). List of valid challenge ratings: 0, 0.125, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30'),
+    features: z
+        .array(
+            z.object({
+                name: z.string().describe('Feature name'),
+                description: z.string().describe('Description of features that are not: spellcasting, innate spellcasting, actions, or legendary actions'),
+                usesPerDay: z.number().nullish().describe('Usage per day'),
+            })
+        )
+        .describe('Monster special features. Will not include spellcasting or Innate spellcasting there is a special field for these'),
+    spellcasting: z
+        .object({
+            spellcastingAbility: abilityEnum.describe('Spellcasting ability'),
+            spellSlots: z
+                .array(z.object({
+                    level: z.number().describe('Spell level (ignore cantrips)'),
+                    slots: z.number().describe('Number of slots available'),
+                }))
+                .describe(`Available spell slots per level. Please ensure you list spells per level for each level up to monster's max spellcasting level.`),
+            spells: z
+                .array(spellSchema)
+                .describe('List of all spells known by the monster'),
+        })
+        .nullish()
+        .describe('Spellcasting section of a monster. Only populate if the monster can use spells. Convert innate and psionic spellcasting to standard spellcasting.'),
+    legendaryActionsPerRound: z.number().nullish().describe('Legendary actions per round. Most extremely powerful creatures or boss like will have legendary actions'),
+    actions: z
+        .array(
+            z.object({
+                name: z.string().describe('Action name should not have any content in parentheses here. That data has a place in other action fields.'),
+                description: z.string().describe('Action description which should be 100% flavor text. All functionality should be stored in fields below.'),
+                cost: z
+                    .number()
+                    .nullish()
+                    .describe('Only present for legendary actions, indicates action cost'),
+                actionType: actionTypeEnum.nullish().describe('Type of action (action, bonus action, reaction)'),
+                attackType: attackTypeEnum.nullish().describe('Type of attack if action requires an attack roll (melee or ranged)'),
+                areaOfEffect: areaOfEffectSchema.nullish().describe('Area of effect shape and size if action affects an area'),
+                finese: z.boolean().describe('Finese property defaulting to false usually present if using a finese weapon for an attack'),
+                recharge: z.string().nullish().describe('Recharge notation, e.g., "5-6"'),
+                range: z
+                    .object({
+                        normal: z.number().describe('range in feet. Default is 5ft for melee attacks, but reach can increase. Will also be range for aoe effects'),
+                        long: z.number().nullish().describe('Long range in feet not always present'),
+                    })
+                    .describe('Range for melee, range, and aoe attacks'),
+                savingThrow: savingThrowSchema.nullish(),
+                damage: z
+                    .array(
+                        z.object({
+                            numDice: z.number().describe('Number of dice typically first number in a dice expression.  Ex: 2d6 + 4 the number of dice is 2'),
+                            diceSize: z.number().describe('Size of dice typically the number after the `d` in a dice expression Ex: 2d6 +4 the size of dice is 4.'),
+                            type: z.string().describe('Damage type, e.g., "slashing", including special types'),
+                        })
+                    )
+                    .nullish()
+                    .describe('Damage details'),
+                effects: z.array(z.string()).nullish().describe('Additional effects or conditions'),
+            })
+        )
+        .describe(
+            'List of actions AND legendary actions. If you provided a value to legendaryActionsPerRound you should create both actions and legendary actions here. Legendary actions can be distinguished by setting a cost value even if it is 0.'
+        ),
+});

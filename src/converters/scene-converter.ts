@@ -1,9 +1,10 @@
 import { ConstructorDataType } from "@league-of-foundry-developers/foundry-vtt-types/src/types/helperTypes";
 import { Logger } from "../classes/logging";
+import { TacScene } from "../types/tac-types";
 
 type SceneCreationData = ConstructorDataType<foundry.data.SceneData> | (ConstructorDataType<foundry.data.SceneData> & Record<string, unknown>);
 
-export const convertSceneToFoundryScene = (tacScene: any, sceneFolder: Folder | undefined): SceneCreationData => {
+export const convertSceneToFoundryScene = (tacScene: TacScene, sceneFolder: Folder | undefined): SceneCreationData => {
     const sceneData = {
         name: tacScene.name,
         folder: sceneFolder,

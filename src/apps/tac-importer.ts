@@ -3,6 +3,7 @@ import { Logger } from "../classes/logging";
 import { convertSceneToFoundryScene } from "../converters/scene-converter";
 import { convertTacNotesToFoundryJournal } from "../converters/journal-converter";
 import { convertMonsterToFoundryActor } from "../converters/monster-converter";
+import { TacExport } from "../types/tac-types";
 
 export class TacImporter extends Application {
     static get defaultOptions() {
@@ -20,7 +21,7 @@ export class TacImporter extends Application {
 
     static async importAdventure(adventureData: string) {
         Logger.info('Importing with Tac Importer...');
-        let tacAdventure = JSON.parse(adventureData);
+        let tacAdventure: TacExport = JSON.parse(adventureData);
 
         Logger.info('Importing Scenes...');
         const scenes = await this.importScenes(tacAdventure);

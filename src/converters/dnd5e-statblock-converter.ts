@@ -1,6 +1,8 @@
 import { Logger } from "../classes/logging";
 import { ActorCreationData } from "../types/actor-creation-data";
-export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> => {
+import { TacMonster } from "../types/tac-types";
+
+export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreationData> => {
     const statBlock = monsterData.statBlocks["DnD-5.1e"];
     if (!statBlock) {
         Logger.warning(`No D&D 5e stat block found for token: ${monsterData.name}`);
@@ -99,8 +101,8 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                 value: 1
             },
             duration: {
-                value: durationAbbreviationMapping[spell.duration] || "",
-                units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration] || "inst"
+                value: durationAbbreviationMapping[spell.duration.type] || "",
+                units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration.type] || "inst"
             },
             target: {
                 affects: spell.areaOfEffect ? {
@@ -118,11 +120,11 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                 }
             },
             range: {
-                value: spell.range || 0,
-                units: "ft"
+                value: spell.range.value || 0,
+                units: spell.range.type === "feet" ? "ft" : spell.range.type.toLowerCase()
             },
             level: spell.level || 0,
-            school: schoolAbbreviationMapping[spell.school?.toLowerCase()] || "evo", 
+            school: schoolAbbreviationMapping[spell.school] || "evo", 
             materials: {
                 value: spell.material || "",
                 consumed: false,
@@ -134,7 +136,7 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                 prepared: true
             },
             properties: [
-                ...(spell.components?.map((component: any) => {
+                ...(spell.components?.map((component: string) => {
                     switch(component) {
                         case "V": return "vocal";
                         case "S": return "somatic";
@@ -147,7 +149,7 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
             ],
             activities: {
                 dnd5eactivity000: {
-                    type: ["melee", "range", "aoe"].includes(spell.attackType) ? "attack" : (spell.savingThrow ? "save" : "utility"),
+                    type: ["melee", "range"].includes(spell.attackType) ? "attack" : (spell.savingThrow ? "save" : "utility"),
                     activation: {
                         type: spell.activation || "action",
                         value: 1,
@@ -160,7 +162,7 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                         spellSlot: true
                     },
                     duration: {
-                        units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration] || "inst",
+                        units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration.type] || "inst",
                         concentration: spell.concentration || false,
                         override: false
                     },
@@ -191,11 +193,11 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                     },
                     damage: {
                         onSave: spell.savingThrow?.effect || "none",
-                        parts: spell.damage?.map((dmg: any) => ({
-                            number: dmg.numDice,
-                            denomination: dmg.diceSize,
-                            bonus: "",
-                            types: [dmg.type],
+                        parts: spell.damageOrHeal ? [{
+                            number: spell.damageOrHeal.dice.number || 0,
+                            denomination: spell.damageOrHeal.dice.size || 0,
+                            bonus: spell.damageOrHeal.dice.flat?.toString() || "",
+                            types: [spell.damageOrHeal.type || ""],
                             custom: {
                                 enabled: false,
                                 formula: ""
@@ -205,12 +207,12 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                                 number: 1,
                                 formula: ""
                             }
-                        })) || []
+                        }] : []
                     },
                     save: spell.savingThrow ? {
-                        ability: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility],
+                        ability: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility || ""],
                         dc: {
-                            calculation: "spellcasting",
+                            calculation: "spellcasting", 
                             formula: ""
                         }
                     } : {},
@@ -228,7 +230,7 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
     return {
         system: {
             traits: {
-                size: sizeAbbreviationMapping[monsterData.size],
+                size: sizeAbbreviationMapping[statBlock.size],
                 dr: statBlock.damageResistances?.join(","),
                 di: statBlock.damageImmunities?.join(","),
                 dv: statBlock.damageVulnerabilities?.join(","),
@@ -262,32 +264,32 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
                     perception: statBlock.senses.passive,
                     special: statBlock.senses.telepathy ? "Telepathy" : ""
                 },
-                spellcasting: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility],
+                spellcasting: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility ?? ""],
             },
             abilities: {
                 str: {
-                    value: getAttributeValue(statBlock, "strength"),
-                    save: getAttributeSaveValue(statBlock, "strength")
+                    value: getAttributeValue(statBlock, "Strength"),
+                    save: getAttributeSaveValue(statBlock, "Strength")
                 },
                 dex: {
-                    value: getAttributeValue(statBlock, "dexterity"),
-                    save: getAttributeSaveValue(statBlock, "dexterity")
+                    value: getAttributeValue(statBlock, "Dexterity"),
+                    save: getAttributeSaveValue(statBlock, "Dexterity")
                 },
                 con: {
-                    value: getAttributeValue(statBlock, "constitution"),
-                    save: getAttributeSaveValue(statBlock, "constitution")
+                    value: getAttributeValue(statBlock, "Constitution"),
+                    save: getAttributeSaveValue(statBlock, "Constitution")
                 },
                 int: {
-                    value: getAttributeValue(statBlock, "intelligence"),
-                    save: getAttributeSaveValue(statBlock, "intelligence")
+                    value: getAttributeValue(statBlock, "Intelligence"),
+                    save: getAttributeSaveValue(statBlock, "Intelligence")
                 },
                 wis: {
-                    value: getAttributeValue(statBlock, "wisdom"),
-                    save: getAttributeSaveValue(statBlock, "wisdom")
+                    value: getAttributeValue(statBlock, "Wisdom"),
+                    save: getAttributeSaveValue(statBlock, "Wisdom")
                 },
                 cha: {
-                    value: getAttributeValue(statBlock, "charisma"),
-                    save: getAttributeSaveValue(statBlock, "charisma")
+                    value: getAttributeValue(statBlock, "Charisma"),
+                    save: getAttributeSaveValue(statBlock, "Charisma")
                 }
             },
             skills: {
@@ -383,12 +385,12 @@ export const getDnD5eActorData = (monsterData: any): Partial<ActorCreationData> 
 };
 
 const abilityAbbreviationMapping: Record<string, string> = {
-    strength: "str",
-    dexterity: "dex",
-    constitution: "con",
-    intelligence: "int",
-    wisdom: "wis",
-    charisma: "cha"
+    "Strength": "str",
+    "Dexterity": "dex",
+    "Constitution": "con",
+    "Intelligence": "int",
+    "Wisdom": "wis",
+    "Charisma": "cha"
 };
 
 const sizeAbbreviationMapping: Record<string, string> = {
@@ -456,7 +458,7 @@ function getAttributeValue(statBlock: any, name: string) {
 }
 
 function getAttributeSaveProf(statBlock: any, name: string) {
-    return statBlock.attributes.find((attr: any) => attr.name === name)?.save || "None";
+    return statBlock.attributes.find((attr: any) => attr.name === name)?.saveProficiencyLevel || "None";
 }
 
 function getAttributeSaveValue(statBlock: any, name: string) {
@@ -507,8 +509,8 @@ function getAbilityAttackBonus(statBlock: any, action: any) {
             return 'dex'
         }
     } else {
-        const str = getAttributeValue(statBlock, 'strength')
-        const dex = getAttributeValue(statBlock, 'dexterity')
+        const str = getAttributeValue(statBlock, 'Strength')
+        const dex = getAttributeValue(statBlock, 'Dexterity')
         if (str > dex) {
             return 'str'
         } else {

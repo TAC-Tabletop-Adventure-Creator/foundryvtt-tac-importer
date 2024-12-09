@@ -1,8 +1,9 @@
 import { Logger } from "../classes/logging";
 import { ActorCreationData } from "../types/actor-creation-data";
 import { getDnD5eActorData } from "./dnd5e-statblock-converter";
+import { TacMonster } from "../types/tac-types";
 
-export const convertMonsterToFoundryActor = (monsterData: any, folder: Folder | undefined) => {
+export const convertMonsterToFoundryActor = (monsterData: TacMonster, folder: Folder | undefined) => {
     // @ts-ignore
     const systemId = game.system.id;
     let actorData: ActorCreationData = {

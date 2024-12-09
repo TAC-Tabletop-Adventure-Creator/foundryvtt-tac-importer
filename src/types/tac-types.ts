@@ -1,73 +1,62 @@
-// These types are mirroring the TAC Adventure structure please keep in sync
+import { DnDFiveOneEStatBlock } from "./monster-schema-5e";
 
-import { Monster5eType } from "./monster-schema-5e";
 
-export type AdventureData = {
-    adventureId: string;
-    name: string;
-    description: string;
-    scenes: SceneType[],
-    tokens: TokenType[],
-    notes: NoteType[]
+export interface TacExport {
+    adventure: Adventure;
+    scenes: TacScene[];
+    monsters: TacMonster[];
+    notes: TacNote[];
 }
 
-export type SceneType = {
-    userId: string;
-    adventureId: string;
-    name: string;
+export enum System {
+    DnDFiveOneE = "DnD-5.1e",
+  }
+
+export interface Adventure {
+    id: string;
+    title: string;
     description: string;
-    imageUrl: string;
-    tokenPlacements: TokenPlacementType[];
-    notePlacements: NotePlacementType[];
-    encounters: EncounterType[];
-    systemConfig: SystemConfigType;
-};
+    systems: System[];
+}
 
-export type TokenType = {
-    id: string;
-    name: string;
-    description: string;
-    imageUrl: string;
-    statBlocks: StatBlocks;
-};
+export enum PlacementType {
+    Monster = "monster",
+    Note = "note",
+  }
+  
+export interface Placement {
+  id: string;
+  referenceId: string;
+  type: PlacementType;
+  name: string;
+  x: number;
+  y: number;
+}
 
-export type NoteType = {
-    id: string;
-    name: string;
-    description: string;
-};
+export interface TacScene {
+  id: string;
+  name: string;
+  description: string;
+  placements: Placement[];
+  imagePrompt: string;
+  imageUrl: string | null;
+}
 
-export type StatBlocks = {
-    dnd5e?: Monster5eType;
-};
+export interface StatBlockMap {
+  [System.DnDFiveOneE]: DnDFiveOneEStatBlock;
+}
+  
+export interface TacMonster {
+  id: string;
+  name: string;
+  description: string;
+  imagePrompt: string;
+  imageUrl: string | null;
+  statBlocks: Partial<Record<System, StatBlockMap[System]>>;
+}
 
-export type TokenPlacementType = {
-    id: string;
-    name?: string;
-    tokenRef: string;
-    x: number;
-    y: number;
-    statBlocks: StatBlocks;
-};
-
-export type NotePlacementType = {
-    id: string;
-    noteRef: string;
-    x: number;
-    y: number;
-};
-
-export type EncounterType = {
-    id: string;
-    name: string;
-    tokenPlacementRefs: string[];
-};
-
-export type SystemConfigType = {
-    dnd5e?: SystemConfig5e;
-};
-
-export type SystemConfig5e = {
-    playerCount: number;
-    averageLevel: number;
-};
+export interface TacNote {
+  id: string;
+  name: string;
+  description: string;
+}
