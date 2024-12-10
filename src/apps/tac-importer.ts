@@ -27,15 +27,15 @@ export class TacImporter extends Application {
         const scenes = await this.importScenes(tacAdventure);
 
         Logger.info('Importing Journals and Notes...');
-        const journals = await this.importJournalsAndNotes(tacAdventure);
+        const journals = await this.importJournalsAndNotes(tacAdventure, scenes);
 
         Logger.info('Importing Actors and Tokens...');
-        const actors = await this.importActorsAndTokens(tacAdventure);
+        const actors = await this.importActorsAndTokens(tacAdventure, scenes);
 
         Logger.info(`Loaded: ${scenes.length} Scenes, ${journals.length} Journals, and ${actors.length} Actors.`);
     }
 
-    static async importScenes(tacAdventure: any): Promise<Scene[]> {
+    static async importScenes(tacAdventure: TacExport): Promise<Scene[]> {
         const sceneFolder = await findOrCreateFolder(tacAdventure.adventure.title, "Scene")
         const foundryScenes: StoredDocument<Scene>[] = [];
         for (const tacScene of tacAdventure.scenes) {
@@ -44,12 +44,12 @@ export class TacImporter extends Application {
             const foundrySceneData = convertSceneToFoundryScene(tacScene, sceneFolder)
             if (foundryScene) {
                 Logger.info(`Scene "${tacScene.name}" already exists. Updating it...`);
-                /*// @ts-ignore
+                // @ts-ignore
                 const existingTokenIds = foundryScene.tokens.map(token => token._id)
                 await foundryScene.deleteEmbeddedDocuments('Token', existingTokenIds)
                 // @ts-ignore
                 const existingNoteIds = foundryScene.notes.map(note => note._id)
-                await foundryScene.deleteEmbeddedDocuments('Note', existingNoteIds)*/
+                await foundryScene.deleteEmbeddedDocuments('Note', existingNoteIds)
                 await foundryScene.update(foundrySceneData);
             } else {
                 Logger.info(`Creating new scene "${tacScene.name}"...`);
@@ -64,7 +64,7 @@ export class TacImporter extends Application {
         return foundryScenes;
     }
 
-    static async importJournalsAndNotes(tacAdventure: any): Promise<JournalEntry[]> {
+    static async importJournalsAndNotes(tacAdventure: TacExport, foundryScenes: Scene[]): Promise<JournalEntry[]> {
         const foundryJournals: StoredDocument<JournalEntry>[] = [];
         // @ts-ignore
         let foundryJournal = game.journal.find(j => j.name === tacAdventure.adventure.title);
@@ -80,27 +80,32 @@ export class TacImporter extends Application {
             foundryJournals.push(foundryJournal)
         }
         // Add notes to scenes.
-        /*for(const scene of tacAdventureData.scenes) {
-            for (const notePlacement of scene.notePlacements) {
-                const foundryScene = foundryScenes.find(foundryScene => foundryScene.name === scene.name);
-                const note = tacAdventureData.notes.find(n => n.id === notePlacement.noteRef);
-                // @ts-ignore
-                const journalPage = foundryJournal.pages.find((page) => page.name === note?.name);
-                if(foundryScene) {
-                    await foundryScene.createEmbeddedDocuments("Note", [{
-                        entryId: foundryJournal._id,
-                        pageId: journalPage._id,
-                        x: notePlacement.x,
-                        y: notePlacement.y,
-                        text: journalPage.name,
-                    }])
-                } else {Logger.warning(`Could not make the token: ${note?.name} because scene: ${scene.name} couldn't be located.`);}
+        for(const scene of tacAdventure.scenes) {
+            for (const notePlacement of scene.placements) {
+                if (notePlacement.type === "note") {
+                    const foundryScene = foundryScenes.find(foundryScene => foundryScene.name === scene.name);
+                    const note = tacAdventure.notes.find(n => n.id === notePlacement.referenceId);
+                    // @ts-ignore
+                    const journalPage = foundryJournal.pages.find((page) => page.name === note?.name);
+                    
+                    if (foundryScene) {
+                        await foundryScene.createEmbeddedDocuments("Note", [{
+                            entryId: foundryJournal._id,
+                            pageId: journalPage._id,
+                            x: notePlacement.x,
+                            y: notePlacement.y,
+                            text: journalPage.name,
+                        }]);
+                    } else {
+                        Logger.warning(`Could not make the token: ${note?.name} because scene: ${scene.name} couldn't be located.`);
+                    }
+                }
             }
-        }*/
+        }
         return foundryJournals;
     }
 
-    static async importActorsAndTokens(tacAdventure: any) {
+    static async importActorsAndTokens(tacAdventure: TacExport, foundryScenes: Scene[]) {
         const foundryActors: Actor[] = [];
         const actorFolder = await findOrCreateFolder(tacAdventure.adventure.title, "Actor")
         for (const monster of tacAdventure.monsters) {
@@ -117,6 +122,33 @@ export class TacImporter extends Application {
             }
             if (foundryActor) {
                 foundryActors.push(foundryActor);
+
+                // Add tokens to actor
+                for (const scene of tacAdventure.scenes) {
+                    for (const monsterPlacement of scene.placements) {
+                        if (monsterPlacement.type === "monster" && monsterPlacement.referenceId === monster.id) {
+                            const foundryScene = foundryScenes.find(foundryScene => foundryScene.name === scene.name);
+                            const tokenData = {
+                                name: foundryActor.name,
+                                displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
+                                x: monsterPlacement.x,
+                                y: monsterPlacement.y,
+                                texture: {
+                                    src: foundryActor.img,
+                                },
+                                disposition: CONST.TOKEN_DISPOSITIONS.HOSTILE,
+                                actorId: foundryActor._id,
+                                actorLink: true,
+                            }
+                            if (foundryScene) {
+                                await foundryScene.createEmbeddedDocuments("Token", [tokenData])
+                            } else {
+                                Logger.warning(`Could not make the token: ${foundryActor.name} because scene: ${scene.name} couldn't be located.`);
+                            }
+                        }
+                    }
+                }
+                
             }
         }
         return foundryActors;
