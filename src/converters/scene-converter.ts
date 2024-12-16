@@ -16,11 +16,11 @@ export const convertSceneToFoundryScene = (tacScene: TacScene, sceneFolder: Fold
             // TODO: Copy image to Foundry storage first
             src: tacScene.imageUrl,
         },
-        /*initial: {
+        initial: {
             x: 500,
             y: 500,
-            scale: .5
-        },*/
+            scale: 1
+        },
     }
     // TODO annoyingly this is the way we must set the gridSize and the typescript we are currently using is wrong somehow.
     // @ts-ignore
