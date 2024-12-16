@@ -62,6 +62,9 @@ You can access the module file using the release tag like this (ensure you have 
 https://raw.githubusercontent.com/TAC-Tabletop-Adventure-Creator/foundryvtt-tac-importer/refs/tags/v1.0.0/src/module.json
 ```
 
+You can see all publicly available releases to FoundryVTT here:
+https://foundryvtt.com/packages/foundryvtt-tac-importer
+
 ### Requirements
 
 - Node.js >= 22.5.0
