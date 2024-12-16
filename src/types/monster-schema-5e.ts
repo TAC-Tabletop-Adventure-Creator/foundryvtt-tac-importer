@@ -212,149 +212,122 @@ export const spellSchema = z.object({
         numScalingDice: z.number().nullish(),
         sizeScalingDice: z.number().nullish(),
         scalingFlatMod: z.number().nullish(),
-        includeMod: z.boolean().describe('default to false'),
-        isHeal: z.boolean().describe('default to false'),
+        includeMod: z.boolean(),
+        isHeal: z.boolean(),
     }).nullish(),
 });
 
 export type DnDFiveOneEStatBlock = z.infer<typeof monsterSchema5e>;
 export const monsterSchema5e = z.object({
-    name: z.string().describe('Monster name'),
-    size: sizeEnum.describe('Monster size category'),
-    type: typeEnum.describe('Monster type'),
-    subType: subTypeEnum.nullish().describe('Monster subtype, if any'),
-    alignment: z.string().describe('Alignment of the monster'),
-    armorClass: z.number().describe('Armor Class value'),
-    hitPoints: z.number().describe('Total hit points'),
-    hitPointFormula: z.string().describe('Hit point formula, e.g., "5d8 + 16"'),
+    name: z.string(),
+    size: sizeEnum,
+    type: typeEnum,
+    subType: subTypeEnum.nullish(),
+    alignment: z.string(),
+    armorClass: z.number(),
+    hitPoints: z.number(),
+    hitPointFormula: z.string(),
     movement: z
         .array(
             z.object({
-                type: movementTypeEnum.describe('Movement type'),
-                speed: z.number().describe('Speed in feet'),
+                type: movementTypeEnum,
+                speed: z.number(),
             })
-        )
-        .describe('Movement speeds and types'),
+        ),
     canHover: z
         .boolean()
-        .nullish()
-        .describe('Indicates if the creature can hover; defaults to false'),
+        .nullish(),
     attributes: z
         .array(
             z.object({
-                name: abilityEnum.describe('Ability name'),
-                value: z.number().describe('Ability score value'),
-                saveProficiencyLevel: proficiencyLevelEnum.describe('Proficiency level for the save which will be none by default.'),
+                name: abilityEnum,
+                value: z.number(),
+                saveProficiencyLevel: proficiencyLevelEnum,
             })
-        )
-        .describe('Six different ability scores and should always have all 6 defined.'),
+        ),
     skills: z
         .array(
             z.object({
-                name: skillEnum.describe('Skill name'),
-                skillProficiencyLevel: proficiencyLevelEnum.describe('Proficiency level for the skill which will be none by default.'),
+                name: skillEnum,
+                skillProficiencyLevel: proficiencyLevelEnum,
             })
         )
-        .nullish()
-        .describe('Skill proficiencies'),
+        .nullish(),
     damageResistances: z
         .array(z.string())
-        .nullish()
-        .describe(
-            'Damage types the monster is resistant to, including special types like "nonmagical weapons", "silvered weapons"'
-        ),
+        .nullish(),
     damageImmunities: z
         .array(z.string())
-        .nullish()
-        .describe(
-            'Damage types the monster is immune to, including special types like "nonmagical weapons", "silvered weapons"'
-        ),
+        .nullish(),
     damageVulnerabilities: z
         .array(z.string())
-        .nullish()
-        .describe(
-            'Damage types the monster is vulnerable to, including special types like "nonmagical weapons", "silvered weapons"'
-        ),
+        .nullish(),
     conditionImmunities: z
         .array(z.string())
-        .nullish()
-        .describe('Conditions the monster is immune to, e.g., "blinded", "poisoned"'),
+        .nullish(),
     senses: z
         .object({
-            passive: z.number().describe('Passive Perception score'),
-            darkvision: z.number().nullish().describe('Darkvision range in feet'),
-            blindsight: z.number().nullish().describe('Blindsight range in feet'),
-            tremorsense: z.number().nullish().describe('Tremorsense range in feet'),
-            truesight: z.number().nullish().describe('Truesight range in feet'),
-            telepathy: z.boolean().nullish().describe('Indicates if the monster has telepathy'),
-        })
-        .describe('Sensory abilities'),
+            passive: z.number(),
+            darkvision: z.number().nullish(),
+            blindsight: z.number().nullish(),
+            tremorsense: z.number().nullish(),
+            truesight: z.number().nullish(),
+            telepathy: z.boolean().nullish(),
+        }),
     languages: z
-        .array(z.string())
-        .describe('Languages the monster knows, e.g., "Common", "Draconic"'),
+        .array(z.string()),
     challenge: z
-        .number()
-        .describe('Challenge rating; convert fractions to decimals (e.g., "1/4" becomes 0.25). List of valid challenge ratings: 0, 0.125, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30'),
+        .number(),
     features: z
         .array(
             z.object({
-                name: z.string().describe('Feature name'),
-                description: z.string().describe('Description of features that are not: spellcasting, innate spellcasting, actions, or legendary actions'),
-                usesPerDay: z.number().nullish().describe('Usage per day'),
+                name: z.string(),
+                description: z.string(),
+                usesPerDay: z.number().nullish(),
             })
-        )
-        .describe('Monster special features. Will not include spellcasting or Innate spellcasting there is a special field for these'),
+        ),
     spellcasting: z
         .object({
-            spellcastingAbility: abilityEnum.describe('Spellcasting ability'),
+            spellcastingAbility: abilityEnum,
             spellSlots: z
                 .array(z.object({
-                    level: z.number().describe('Spell level (ignore cantrips)'),
-                    slots: z.number().describe('Number of slots available'),
-                }))
-                .describe(`Available spell slots per level. Please ensure you list spells per level for each level up to monster's max spellcasting level.`),
+                    level: z.number(),
+                    slots: z.number(),
+                })),
             spells: z
-                .array(spellSchema)
-                .describe('List of all spells known by the monster'),
+                .array(spellSchema),
         })
-        .nullish()
-        .describe('Spellcasting section of a monster. Only populate if the monster can use spells. Convert innate and psionic spellcasting to standard spellcasting.'),
-    legendaryActionsPerRound: z.number().nullish().describe('Legendary actions per round. Most extremely powerful creatures or boss like will have legendary actions'),
+        .nullish(),
+    legendaryActionsPerRound: z.number().nullish(),
     actions: z
         .array(
             z.object({
-                name: z.string().describe('Action name should not have any content in parentheses here. That data has a place in other action fields.'),
-                description: z.string().describe('Action description which should be 100% flavor text. All functionality should be stored in fields below.'),
+                name: z.string(),
+                description: z.string(),
                 cost: z
                     .number()
-                    .nullish()
-                    .describe('Only present for legendary actions, indicates action cost'),
-                actionType: actionTypeEnum.nullish().describe('Type of action (action, bonus action, reaction)'),
-                attackType: attackTypeEnum.nullish().describe('Type of attack if action requires an attack roll (melee or ranged)'),
-                areaOfEffect: areaOfEffectSchema.nullish().describe('Area of effect shape and size if action affects an area'),
-                finese: z.boolean().describe('Finese property defaulting to false usually present if using a finese weapon for an attack'),
-                recharge: z.string().nullish().describe('Recharge notation, e.g., "5-6"'),
+                    .nullish(),
+                actionType: actionTypeEnum.nullish(),
+                attackType: attackTypeEnum.nullish(),
+                areaOfEffect: areaOfEffectSchema.nullish(),
+                finese: z.boolean(),
+                recharge: z.string().nullish(),
                 range: z
                     .object({
-                        normal: z.number().describe('range in feet. Default is 5ft for melee attacks, but reach can increase. Will also be range for aoe effects'),
-                        long: z.number().nullish().describe('Long range in feet not always present'),
-                    })
-                    .describe('Range for melee, range, and aoe attacks'),
+                        normal: z.number(),
+                        long: z.number().nullish(),
+                    }),
                 savingThrow: savingThrowSchema.nullish(),
                 damage: z
                     .array(
                         z.object({
-                            numDice: z.number().describe('Number of dice typically first number in a dice expression.  Ex: 2d6 + 4 the number of dice is 2'),
-                            diceSize: z.number().describe('Size of dice typically the number after the `d` in a dice expression Ex: 2d6 +4 the size of dice is 4.'),
-                            type: z.string().describe('Damage type, e.g., "slashing", including special types'),
+                            numDice: z.number(),
+                            diceSize: z.number(),
+                            type: z.string(),
                         })
                     )
-                    .nullish()
-                    .describe('Damage details'),
-                effects: z.array(z.string()).nullish().describe('Additional effects or conditions'),
+                    .nullish(),
+                effects: z.array(z.string()).nullish(),
             })
-        )
-        .describe(
-            'List of actions AND legendary actions. If you provided a value to legendaryActionsPerRound you should create both actions and legendary actions here. Legendary actions can be distinguished by setting a cost value even if it is 0.'
         ),
 });
