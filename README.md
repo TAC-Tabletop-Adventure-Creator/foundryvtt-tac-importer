@@ -1,4 +1,4 @@
-# FoundryVTT TAC Importer
+# Official FoundryVTT TAC Importer
 
 The official TAC: Tabletop Adventure Creator module for importing your content into FoundryVTT. This module allows you to seamlessly transfer your adventures, including scenes, journals, and monsters, from TAC into your FoundryVTT game system.
 
