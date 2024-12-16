@@ -103,7 +103,7 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
                 value: 1
             },
             duration: {
-                value: durationAbbreviationMapping[spell.duration.type] || "",
+                value: durationAbbreviationMapping[spell.duration.value] || "",
                 units: spell.concentration ? "conc" : durationUnitsMapping[spell.duration.type] || "inst"
             },
             target: {

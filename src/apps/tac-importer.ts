@@ -25,6 +25,9 @@ export class TacImporter extends Application {
 
         Logger.info('Importing Scenes...');
         const scenes = await this.importScenes(tacAdventure);
+        for (const scene of scenes) {
+            Logger.info(`Scene ${scene.name} created with data: ${JSON.stringify(scene, null, 2)}`);
+        }
 
         Logger.info('Importing Journals and Notes...');
         const journals = await this.importJournalsAndNotes(tacAdventure, scenes);
@@ -41,7 +44,7 @@ export class TacImporter extends Application {
         for (const tacScene of tacAdventure.scenes) {
             // @ts-ignore
             let foundryScene = game.scenes.find(s => s.name === tacScene.name && s.folder?.id === sceneFolder?.id);
-            const foundrySceneData = convertSceneToFoundryScene(tacScene, sceneFolder)
+            const foundrySceneData = await convertSceneToFoundryScene(tacScene, sceneFolder)
             if (foundryScene) {
                 Logger.info(`Scene "${tacScene.name}" already exists. Updating it...`);
                 // @ts-ignore
@@ -109,7 +112,7 @@ export class TacImporter extends Application {
         const foundryActors: Actor[] = [];
         const actorFolder = await findOrCreateFolder(tacAdventure.adventure.title, "Actor")
         for (const monster of tacAdventure.monsters) {
-            const tacActor = convertMonsterToFoundryActor(monster, actorFolder)
+            const tacActor = await convertMonsterToFoundryActor(monster, actorFolder)
             // @ts-ignore
             let foundryActor = game.actors.find(s => s.name === tacActor.name && s.folder?.id === actorFolder?.id);
             if (foundryActor) {
