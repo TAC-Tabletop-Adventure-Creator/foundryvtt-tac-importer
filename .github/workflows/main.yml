@@ -15,7 +15,7 @@ jobs:
 
       - name: Extract Version From Tag
         id: get_version
-        uses: battila7/get-version-action@v2
+        uses: dhkatz/get-version-action@v3.0.0
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -38,7 +38,7 @@ jobs:
         with:
           files: './dist/module.json'
         env:
-          version: ${{steps.get_version.outputs.version-without-v}}
+          version: ${{steps.get_version.outputs.version}}
           url: https://github.com/${{github.repository}}
           manifest: https://github.com/${{github.repository}}/releases/download/${{steps.get_version.outputs.version}}/module.json
           download: https://github.com/${{github.repository}}/releases/download/${{steps.get_version.outputs.version}}/module.zip
