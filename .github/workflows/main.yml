@@ -33,9 +33,10 @@ jobs:
         run: |
           mkdir -p foundryvtt-tac-importer
           cp src/module.json foundryvtt-tac-importer/module.json
+          cp src/module.json ./module.json  # Copy module.json to root for release
           cp -r dist/* foundryvtt-tac-importer/
           cd foundryvtt-tac-importer
-          zip -r ../foundryvtt-tac-importer.zip .  # Create a zip file named after the project
+          zip -r ../foundryvtt-tac-importer.zip .
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v1
@@ -44,6 +45,8 @@ jobs:
           name: ${{ github.ref_name }}
           draft: false
           prerelease: false
-          files: foundryvtt-tac-importer.zip
+          files: |
+            foundryvtt-tac-importer.zip
+            module.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
