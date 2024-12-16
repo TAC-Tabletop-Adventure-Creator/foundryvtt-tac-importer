@@ -13,10 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Extract Version From Tag
+        id: get_version
+        uses: battila7/get-version-action@v2
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '22'  # Specify the Node.js version
+          node-version: '22'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -29,14 +33,24 @@ jobs:
       - name: Build the project
         run: pnpm run build
 
-      - name: Prepare Release Assets
+      - name: Update Module Manifest in dist
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: './dist/module.json'
+        env:
+          version: ${{steps.get_version.outputs.version-without-v}}
+          url: https://github.com/${{github.repository}}
+          manifest: https://github.com/${{github.repository}}/releases/download/${{steps.get_version.outputs.version}}/module.json
+          download: https://github.com/${{github.repository}}/releases/download/${{steps.get_version.outputs.version}}/module.zip
+          bugs: https://github.com/${{github.repository}}/issues
+
+      - name: Copy updated module.json to root
+        run: cp dist/module.json ./module.json
+
+      - name: Create Module Zip
         run: |
-          mkdir -p foundryvtt-tac-importer
-          cp src/module.json foundryvtt-tac-importer/module.json
-          cp src/module.json ./module.json  # Copy module.json to root for release
-          cp -r dist/* foundryvtt-tac-importer/
-          cd foundryvtt-tac-importer
-          zip -r ../foundryvtt-tac-importer.zip .
+          cd dist
+          zip -r ../module.zip .
 
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v1
@@ -46,7 +60,14 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            foundryvtt-tac-importer.zip
+            module.zip
             module.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Module to FoundryVTT Website
+        id: publish-to-foundry
+        uses: cs96and/FoundryVTT-release-package@v1
+        with:
+          package-token: ${{ secrets.FOUNDRY_PACKAGE_TOKEN }}
+          manifest-url: https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/module.json

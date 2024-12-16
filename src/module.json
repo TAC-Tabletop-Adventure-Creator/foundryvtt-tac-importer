@@ -2,7 +2,7 @@
   "id": "foundryvtt-tac-importer",
   "title": "FoundryVTT TAC Importer",
   "description": "The official TAC: Tabletop Adventure Creator project to import your content into FoundryVTT",
-  "version": "1.0.0",
+  "version": "<<autoreplaced>>",
   "library": "false",
   "compatibility": {
     "minimum": 12,
@@ -11,18 +11,17 @@
   "authors": [
     {
       "name": "TAC: TTRPG Adventure Creator",
-      "url": "https://github.com/Mandalorian007/foundryvtt-tac-importer/tree/master",
-      "discord": "discordID#0001"
+      "url": "https://github.com/TAC-Tabletop-Adventure-Creator/foundryvtt-tac-importer",
+      "discord": "thundersoap"
     }
   ],
   "esmodules": [
     "index.js"
   ],
-  "url": "https://github.com/Mandalorian007/foundryvtt-tac-importer",
-  "bugs": "https://github.com/Mandalorian007/foundryvtt-tac-importer/issues",
-  "license": "https://github.com/Mandalorian007/foundryvtt-tac-importer/releases/blob/main/LICENSE",
-  "readme": "https://github.com/Mandalorian007/foundryvtt-tac-importer/releases/blob/main/README.md",
-  "manifest": "https://github.com/Mandalorian007/foundryvtt-tac-importer/releases/latest/download/module.json",
+  "url": "<<autoreplaced>>",
+  "bugs": "<<autoreplaced>>",
+  "manifest": "<<autoreplaced>>",
+  "download": "<<autoreplaced>>",
   "media": [
     {
       "type": "icon",

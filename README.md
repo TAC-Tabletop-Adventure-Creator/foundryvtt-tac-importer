@@ -43,9 +43,8 @@ pnpm run build
 
 To create a new release:
 
-1. Update the version number in both `src/module.json` and `package.json`
-2. Commit your changes
-3. Create and push a new version tag:
+1. Commit your changes
+2. Create and push a new version tag:
 ```shell
 git tag -a v1.0.0 -m "Release version 1.0.0"
 git push origin v1.0.0
@@ -53,9 +52,15 @@ git push origin v1.0.0
 
 This will trigger the GitHub Action workflow which will:
 - Build the project
-- Create a new GitHub release
-- Upload the module files as release assets
+- Update the module.json with:
+  - Current version
+  - Download URLs
+  - Manifest URL
+  - Other repository links
+- Create a GitHub release with module.zip and module.json
+- Publish the module to FoundryVTT's package system
 
+Note: The module.json in the source code uses placeholder values (<<autoreplaced>>) which are automatically populated during the release process.
 
 You can access the module file using the release tag like this (ensure you have the correct version tag):
 ```
