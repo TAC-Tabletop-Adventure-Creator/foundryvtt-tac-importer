@@ -56,6 +56,12 @@ This will trigger the GitHub Action workflow which will:
 - Create a new GitHub release
 - Upload the module files as release assets
 
+
+You can access the module file using the release tag like this (ensure you have the correct version tag):
+```
+https://raw.githubusercontent.com/TAC-Tabletop-Adventure-Creator/foundryvtt-tac-importer/refs/tags/v1.0.0/src/module.json
+```
+
 ### Requirements
 
 - Node.js >= 22.5.0
