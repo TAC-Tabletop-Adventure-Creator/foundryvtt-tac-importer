@@ -4,8 +4,9 @@ The official TAC: Tabletop Adventure Creator module for importing your content i
 
 Currently supports:
 - Importing scenes with maps
+- Monsters with stat blocks (D&D 5e)
 - Journal entries and notes
-- Monster stat blocks (D&D 5e)
+- Tokens, Walls, and Lights automatically placed on scenes.
 
 ## Installation
 
@@ -29,9 +30,9 @@ Install deps:
 pnpm install
 ```
 
-I would advise a symlink to your foundry vtt module directory. If you installed for macbook you can use:
+I would advise a symlink to your foundry vtt module directory to the build directory. If you installed natively on a macbook you can use:
 ```shell
-ln -s $PWD/dist $HOME/Library/Application\ Support/FoundryVTT/Data/modules/foundryvtt-tac-importer
+ln -s $PWD/dist/* "$HOME/Library/Application Support/FoundryVTT/Data/modules/foundryvtt-tac-importer/"
 ```
 
 Then build your project so your dist directory is created with the resources:

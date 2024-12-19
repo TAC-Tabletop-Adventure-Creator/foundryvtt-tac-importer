@@ -4,6 +4,8 @@ import { convertSceneToFoundryScene } from "../converters/scene-converter";
 import { convertTacNotesToFoundryJournal } from "../converters/journal-converter";
 import { convertMonsterToFoundryActor } from "../converters/monster-converter";
 import { TacExport } from "../types/tac-types";
+import { centerToTopLeft } from "../utils/coordinates";
+import { AmbientLightData, LightData, WallData } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs";
 
 export class TacImporter extends Application {
     static get defaultOptions() {
@@ -48,17 +50,53 @@ export class TacImporter extends Application {
             if (foundryScene) {
                 Logger.info(`Scene "${tacScene.name}" already exists. Updating it...`);
                 // @ts-ignore
-                const existingTokenIds = foundryScene.tokens.map(token => token._id)
+                const existingTokenIds = foundryScene.tokens?.map(token => token._id) || []
                 await foundryScene.deleteEmbeddedDocuments('Token', existingTokenIds)
                 // @ts-ignore
-                const existingNoteIds = foundryScene.notes.map(note => note._id)
+                const existingNoteIds = foundryScene.notes?.map(note => note._id) || []
                 await foundryScene.deleteEmbeddedDocuments('Note', existingNoteIds)
+                // @ts-ignore
+                const existingWallIds = foundryScene.walls?.map(wall => wall._id) || []
+                await foundryScene.deleteEmbeddedDocuments('Wall', existingWallIds)
+                // @ts-ignore
+                const existingLightIds = foundryScene.ambientLights?.map(light => light._id) || []
+                await foundryScene.deleteEmbeddedDocuments('AmbientLight', existingLightIds)
                 await foundryScene.update(foundrySceneData);
             } else {
                 Logger.info(`Creating new scene "${tacScene.name}"...`);
                 foundryScene = await Scene.create(foundrySceneData);
             }
             if (foundryScene) {
+                // Add walls to scene
+                const foundryWalls = tacScene.walls?.map((wall) => {
+                    const foundryWall: Partial<WallData> =  {
+                        c: [Math.floor(wall.startX), Math.floor(wall.startY), Math.floor(wall.endX), Math.floor(wall.endY)],
+                        door: foundry.CONST.WALL_DOOR_TYPES.NONE,
+                        move: wall.blocksMovement ? foundry.CONST.WALL_MOVEMENT_TYPES.NORMAL: foundry.CONST.WALL_MOVEMENT_TYPES.NONE,
+                        sight: wall.blocksVision ? foundry.CONST.WALL_SENSE_TYPES.NORMAL: foundry.CONST.WALL_SENSE_TYPES.NONE,
+                        sound: wall.blocksSound ? foundry.CONST.WALL_SENSE_TYPES.NORMAL: foundry.CONST.WALL_SENSE_TYPES.NONE,
+                    };
+                    return foundryWall;
+                }) || [];
+                await foundryScene.createEmbeddedDocuments("Wall", foundryWalls);
+
+                // Add lights to scene
+                const foundryLights = tacScene.lights?.map((light) => {
+                    // @ts-ignore
+                    const gridDistance = (game as any).system.grid.distance || 1;
+                    return {
+                        x: Math.floor(light.x),
+                        y: Math.floor(light.y),
+                        rotation: 0,
+                        config: {
+                            angle: 360,
+                            color: light.hexColor,
+                            dim: Math.floor(light.radius) / gridDistance,
+                            bright: Math.floor(light.radius / 2) / gridDistance,
+                        }
+                    }
+                }) || [];
+                await foundryScene.createEmbeddedDocuments("AmbientLight", foundryLights);
                 foundryScenes.push(foundryScene);
             } else {
                 Logger.warning('Unexpectedly the Foundry Scene returned undefined');
@@ -95,8 +133,7 @@ export class TacImporter extends Application {
                         await foundryScene.createEmbeddedDocuments("Note", [{
                             entryId: foundryJournal._id,
                             pageId: journalPage._id,
-                            x: notePlacement.x,
-                            y: notePlacement.y,
+                            ...centerToTopLeft(notePlacement.x, notePlacement.y, 50),
                             text: journalPage.name,
                         }]);
                     } else {
@@ -134,8 +171,7 @@ export class TacImporter extends Application {
                             const tokenData = {
                                 name: foundryActor.name,
                                 displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
-                                x: monsterPlacement.x,
-                                y: monsterPlacement.y,
+                                ...centerToTopLeft(monsterPlacement.x, monsterPlacement.y),
                                 texture: {
                                     src: foundryActor.img,
                                 },

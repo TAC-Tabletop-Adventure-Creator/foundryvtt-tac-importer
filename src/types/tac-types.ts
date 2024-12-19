@@ -37,9 +37,30 @@ export interface TacScene {
   id: string;
   name: string;
   description: string;
+  walls: Wall[];
+  lights: Light[];
   placements: Placement[];
   imagePrompt: string;
   imageUrl: string | null;
+}
+
+export interface Wall {
+  id: string;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  blocksVision: boolean;
+  blocksSound: boolean;
+  blocksMovement: boolean;
+}
+
+export interface Light {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  hexColor: string;
 }
 
 export interface StatBlockMap {
