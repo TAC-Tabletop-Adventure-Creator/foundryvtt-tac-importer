@@ -151,7 +151,9 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
             ],
             activities: {
                 dnd5eactivity000: {
-                    type: ["melee", "range"].includes(spell.attackType) ? "attack" : (spell.savingThrow ? "save" : "utility"),
+                    type: ["melee", "range"].includes(spell.attackType) ? "attack" 
+                        : (spell.savingThrow ? "save" 
+                            : spell.damageOrHeal ? "damage" : "utility"),
                     activation: {
                         type: spell.activation || "action",
                         value: 1,
