@@ -5,7 +5,7 @@ import { convertTacNotesToFoundryJournal } from "../converters/journal-converter
 import { convertMonsterToFoundryActor } from "../converters/monster-converter";
 import { TacExport } from "../types/tac-types";
 import { centerToTopLeft } from "../utils/coordinates";
-import { AmbientLightData, LightData, WallData } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs";
+import { WallData } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/module.mjs";
 
 export class TacImporter extends Application {
     static get defaultOptions() {
@@ -177,7 +177,7 @@ export class TacImporter extends Application {
                                 },
                                 disposition: CONST.TOKEN_DISPOSITIONS.HOSTILE,
                                 actorId: foundryActor._id,
-                                actorLink: true,
+                                actorLink: false,
                             }
                             if (foundryScene) {
                                 await foundryScene.createEmbeddedDocuments("Token", [tokenData])
