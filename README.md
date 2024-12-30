@@ -6,7 +6,7 @@ Currently supports:
 - Importing scenes with maps
 - Monsters with stat blocks (D&D 5e)
 - Journal entries and notes
-- Tokens, Walls, and Lights automatically placed on scenes.
+- Tokens, Walls (including doors), and Lights automatically placed on scenes
 
 ## Installation
 

@@ -53,6 +53,9 @@ export interface Wall {
   blocksVision: boolean;
   blocksSound: boolean;
   blocksMovement: boolean;
+  isDoor: boolean;
+  isSecret: boolean;
+  isLocked: boolean;
 }
 
 export interface Light {

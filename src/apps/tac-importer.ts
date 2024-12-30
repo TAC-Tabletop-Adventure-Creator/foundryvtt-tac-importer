@@ -67,18 +67,30 @@ export class TacImporter extends Application {
                 foundryScene = await Scene.create(foundrySceneData);
             }
             if (foundryScene) {
-                // Add walls to scene
-                const foundryWalls = tacScene.walls?.map((wall) => {
-                    const foundryWall: Partial<WallData> =  {
+                // Add walls to scene (excluding doors)
+                const foundryWalls = tacScene.walls
+                    ?.filter(wall => !wall.isDoor)
+                    .map((wall) => ({
                         c: [Math.floor(wall.startX), Math.floor(wall.startY), Math.floor(wall.endX), Math.floor(wall.endY)],
                         door: foundry.CONST.WALL_DOOR_TYPES.NONE,
-                        move: wall.blocksMovement ? foundry.CONST.WALL_MOVEMENT_TYPES.NORMAL: foundry.CONST.WALL_MOVEMENT_TYPES.NONE,
-                        sight: wall.blocksVision ? foundry.CONST.WALL_SENSE_TYPES.NORMAL: foundry.CONST.WALL_SENSE_TYPES.NONE,
-                        sound: wall.blocksSound ? foundry.CONST.WALL_SENSE_TYPES.NORMAL: foundry.CONST.WALL_SENSE_TYPES.NONE,
-                    };
-                    return foundryWall;
-                }) || [];
-                await foundryScene.createEmbeddedDocuments("Wall", foundryWalls);
+                        move: wall.blocksMovement ? foundry.CONST.WALL_MOVEMENT_TYPES.NORMAL : foundry.CONST.WALL_MOVEMENT_TYPES.NONE,
+                        sight: wall.blocksVision ? foundry.CONST.WALL_SENSE_TYPES.NORMAL : foundry.CONST.WALL_SENSE_TYPES.NONE,
+                        sound: wall.blocksSound ? foundry.CONST.WALL_SENSE_TYPES.NORMAL : foundry.CONST.WALL_SENSE_TYPES.NONE,
+                    })) || [];
+
+                // Add doors to scene
+                const foundryDoors = tacScene.walls
+                    ?.filter(wall => wall.isDoor)
+                    .map((wall) => ({
+                        c: [Math.floor(wall.startX), Math.floor(wall.startY), Math.floor(wall.endX), Math.floor(wall.endY)],
+                        door: wall.isSecret ? foundry.CONST.WALL_DOOR_TYPES.SECRET : foundry.CONST.WALL_DOOR_TYPES.DOOR,
+                        ds: wall.isLocked ? foundry.CONST.WALL_DOOR_STATES.LOCKED : foundry.CONST.WALL_DOOR_STATES.CLOSED,
+                        move: foundry.CONST.WALL_MOVEMENT_TYPES.NORMAL,
+                        sight: foundry.CONST.WALL_SENSE_TYPES.NORMAL,
+                        sound: foundry.CONST.WALL_SENSE_TYPES.NORMAL,
+                    })) || [];
+
+                await foundryScene.createEmbeddedDocuments("Wall", [...foundryWalls, ...foundryDoors]);
 
                 // Add lights to scene
                 const foundryLights = tacScene.lights?.map((light) => {
