@@ -47,8 +47,7 @@ To create a new release:
 1. Commit your changes
 2. Create and push a new version tag:
 ```shell
-git tag -a v1.0.0 -m "Release version 1.0.0"
-git push origin v1.0.0
+VERSION=X.X.X && git tag -a v$VERSION -m "Release version $VERSION" && git push origin v$VERSION
 ```
 
 This will trigger the GitHub Action workflow which will:
