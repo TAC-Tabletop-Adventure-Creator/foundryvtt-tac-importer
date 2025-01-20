@@ -105,6 +105,7 @@ export class TacImporter extends Application {
                             color: light.hexColor,
                             dim: Math.floor(light.radius) / gridDistance,
                             bright: Math.floor(light.radius / 2) / gridDistance,
+                            alpha: 0.2, // This sets color intensity
                         }
                     }
                 }) || [];
