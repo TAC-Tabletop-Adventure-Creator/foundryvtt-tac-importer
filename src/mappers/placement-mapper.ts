@@ -1,6 +1,7 @@
 import { Placement } from "../types/tac-data";
 import { PlacementsMapperResult, PlacementMapResult, ScenesMapperResult, MonstersMapperResult, NotesMapperResult } from "../types/mapper-types";
 import { Logger } from "../classes/logging";
+import { centerToTopLeft } from "../utils/coordinates";
 
 export class PlacementMapper {
   /**
@@ -109,13 +110,17 @@ export class PlacementMapper {
     const scene = sceneMapping.foundryEntity;
     const actor = monsterMapping.foundryEntity;
     
+    // Convert center coordinates to top-left for proper placement
+    // Use token size of 50 for default size (can be adjusted if needed)
+    const position = centerToTopLeft(placement.position_x, placement.position_y);
+    
     // Create token data
     const tokenData = {
       name: actor.name,
       // @ts-ignore - Foundry VTT constants
       displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
-      x: placement.position_x,
-      y: placement.position_y,
+      x: position.x,
+      y: position.y,
       texture: {
         src: actor.img || actor.data?.img,
       },
@@ -168,6 +173,10 @@ export class PlacementMapper {
     const scene = sceneMapping.foundryEntity;
     const journalInfo = noteMapping.foundryEntity;
     
+    // Convert center coordinates to top-left for proper placement
+    // Notes typically have a standard size of 40 pixels
+    const position = centerToTopLeft(placement.position_x, placement.position_y, 40);
+    
     // Most notes store the journal and page separately
     let entryId, pageId, noteName;
     
@@ -192,8 +201,8 @@ export class PlacementMapper {
     const noteData = {
       entryId: entryId,
       pageId: pageId, // May be undefined for older Foundry versions
-      x: placement.position_x,
-      y: placement.position_y,
+      x: position.x,
+      y: position.y,
       text: noteName || "Note",
       // Default icon if needed
       // icon: "icons/svg/book.svg"
