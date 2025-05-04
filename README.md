@@ -7,6 +7,8 @@ Currently supports:
 - Monsters with stat blocks (D&D 5e)
 - Journal entries and notes
 - Tokens, Walls (including doors), and Lights automatically placed on scenes
+- Secure token-based import from TAC platform
+- Foundry VTT v13 compatibility with scene controls integration
 
 ## Installation
 
@@ -18,12 +20,21 @@ https://github.com/TAC-Tabletop-Adventure-Creator/foundryvtt-tac-importer/releas
 ## Usage
 
 1. Install and enable the module in FoundryVTT
-2. Look for the "Tabletop Adventure Importer" button in your Scenes, Actors, or Journal tabs
-3. Paste your TAC adventure data and click "Import Adventure"
+2. Use one of these methods to access the importer:
+   - Click the TAC dice icon in the scene controls toolbar (left side)
+   - Click the "Tabletop Adventure Importer" button in your Scenes, Actors, or Journal tabs
+3. Enter your one-time token from the TAC platform and click "Import Adventure"
+
+The importer will fetch your adventure data and import all scenes, monsters, and journal entries with proper linkages.
 
 ## Developers
 
 ### Local Setup
+
+Note: we are currently snapshotting the main branch for v13 types. re-run this to update
+```shell
+pnpm add -D fvtt-types@github:League-of-Foundry-Developers/foundry-vtt-types#main
+```
 
 Install deps:
 ```shell
@@ -37,7 +48,7 @@ ln -s $PWD/dist/* "$HOME/Library/Application Support/FoundryVTT/Data/modules/fou
 
 Then build your project so your dist directory is created with the resources:
 ```shell
-pnpm run build
+pnpm build
 ```
 
 ### Releasing

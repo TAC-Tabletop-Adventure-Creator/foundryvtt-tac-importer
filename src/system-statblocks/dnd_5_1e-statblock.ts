@@ -1,14 +1,30 @@
 import { Logger } from "../classes/logging";
-import { ActorCreationData } from "../types/actor-creation-data";
-import { TacMonster } from "../types/tac-types";
+import { Dnd5_1eStatBlock } from "../types/monster-schema-5_1e";
+import { Monster } from "../types/tac-data";
 
-export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreationData> => {
-    const statBlock = monsterData.statBlocks["DnD-5.1e"];
+/**
+ * Converts a monster with D&D 5.1e statblock to Foundry actor data
+ * Good references:
+ * https://github.com/foundryvtt/dnd5e/blob/4.4.x/packs/_source/monsters/elemental/earth-elemental.yml
+ */
+export function convertDnd51eStatblock(monster: Monster): any {
+    Logger.info(`Converting D&D 5.1e statblock for ${monster.name}`);
+    const statBlock = monster.statblock as Dnd5_1eStatBlock;
+    
+    // Check if statblock exists for this system
     if (!statBlock) {
-        Logger.warning(`No D&D 5e stat block found for token: ${monsterData.name}`);
-        return {};
+        Logger.warning(`No D&D 5.1e statblock found for monster: ${monster.name}`);
+        return {
+            system: {
+                details: {
+                    biography: {
+                        value: `<p><em>Note: No D&D 5.1e statblock data available for this monster.</em></p>`
+                    }
+                }
+            }
+        };
     }
-
+    
     const featureItems = statBlock.features?.map((feature: any) => ({
         name: feature.name,
         type: "feat",
@@ -16,7 +32,7 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
             description: {
                 value: feature.description
             },
-            uses: { //TODO this cause a type error, but works...
+            uses: { //TODO this causes a type error, but works...
                 max: feature.usesPerDay
             }
         }
@@ -27,10 +43,10 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
         name: action.name,
         type: "weapon",
         system: {
-            equipped: true,
             description: {
                 value: action.description
             },
+            equipped: true,
             properties: {
                 fin: action.finese
             },
@@ -39,15 +55,22 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
                 dc: action.savingThrow ? getSavingThrowDc(statBlock, action.savingThrow?.ability) : undefined,
                 scaling: "flat"
             },
-            ability: 'none', // remove ability modifier for damage
+            ability: getAbilityAttackBonus(statBlock, action),
             damage: {
-                parts: action.damage?.map((dmg: any) => {
-                    const dmgString = dmg.numDice + 'd' + dmg.diceSize
-                    return [
-                        dmgString,
-                        dmg.type
-                    ]
+                ...(action.damage?.[0] && {
+                    base: {
+                        number: action.damage[0].numDice,
+                        denomination: action.damage[0].diceSize,
+                        types: action.damage[0].type
+                    }
                 }),
+                ...(action.damage?.[1] && {
+                    versatile: {
+                        number: action.damage[1].numDice,
+                        denomination: action.damage[1].diceSize,
+                        types: action.damage[1].type
+                    }
+                })
             },
             proficient: true,
             activities: {
@@ -88,8 +111,7 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
         spell8: { value: getSpellSlotValue(statBlock, 8), override: null },
         spell9: { value: getSpellSlotValue(statBlock, 9), override: null }
     };
-    Logger.info(`Working on : ${statBlock.name}`)
-    Logger.info(`spells found: ${statBlock.spellcasting?.spells.map((spell: any) => spell.name).join(', ')}`)
+    Logger.info(`Converting: ${statBlock.name}`)
 
     const spells = statBlock.spellcasting?.spells?.map((spell: any) => ({
         name: spell.name,
@@ -231,45 +253,9 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
         folder: null
     })) || []
 
-    return {
+
+    const actorData = {
         system: {
-            traits: {
-                size: sizeAbbreviationMapping[statBlock.size],
-                dr: statBlock.damageResistances?.join(","),
-                di: statBlock.damageImmunities?.join(","),
-                dv: statBlock.damageVulnerabilities?.join(","),
-                ci: statBlock.conditionImmunities?.join(","),
-                languages: {
-                    value: statBlock.languages || []
-                }
-            },
-            attributes: {
-                hp: {
-                    value: statBlock.hitPoints,
-                    max: statBlock.hitPoints,
-                    formula: statBlock.hitPointFormula
-                },
-                ac: {
-                    value: statBlock.armorClass
-                },
-                movement: {
-                    walk: statBlock.movement.find((move: any) => move.type === "walk")?.speed,
-                    fly: statBlock.movement.find((move: any) => move.type === "fly")?.speed,
-                    swim: statBlock.movement.find((move: any) => move.type === "swim")?.speed,
-                    climb: statBlock.movement.find((move: any) => move.type === "climb")?.speed,
-                    burrow: statBlock.movement.find((move: any) => move.type === "burrow")?.speed,
-                    hover: statBlock.canHover || false
-                },
-                senses: {
-                    darkvision: statBlock.senses.darkvision,
-                    blindsight: statBlock.senses.blindsight,
-                    tremorsense: statBlock.senses.tremorsense,
-                    truesight: statBlock.senses.truesight,
-                    perception: statBlock.senses.passive,
-                    special: statBlock.senses.telepathy ? "Telepathy" : ""
-                },
-                spellcasting: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility ?? ""],
-            },
             abilities: {
                 str: {
                     value: getAttributeValue(statBlock, "Strength"),
@@ -294,6 +280,60 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
                 cha: {
                     value: getAttributeValue(statBlock, "Charisma"),
                     save: getAttributeSaveValue(statBlock, "Charisma")
+                }
+            },
+            attributes: {
+                ac: {
+                    value: statBlock.armorClass
+                },
+                hp: {
+                    value: statBlock.hitPoints,
+                    max: statBlock.hitPoints,
+                    formula: statBlock.hitPointFormula
+                },
+                init: {
+                    ability: '',
+                    bonus: 0
+                },
+                movement: {
+                    burrow: statBlock.movement.find((move: any) => move.type === "burrow")?.speed,
+                    climb: statBlock.movement.find((move: any) => move.type === "climb")?.speed,
+                    fly: statBlock.movement.find((move: any) => move.type === "fly")?.speed,
+                    swim: statBlock.movement.find((move: any) => move.type === "swim")?.speed,
+                    walk: statBlock.movement.find((move: any) => move.type === "walk")?.speed,
+                    hover: statBlock.canHover || false
+                },
+                senses: {
+                    darkvision: statBlock.senses.darkvision,
+                    blindsight: statBlock.senses.blindsight,
+                    tremorsense: statBlock.senses.tremorsense,
+                    truesight: statBlock.senses.truesight,
+                    //TODO uncertain if this is used anymore
+                    perception: statBlock.senses.passive,
+                    special: statBlock.senses.telepathy ? "Telepathy" : ""
+                },
+                 //TODO validate on spellcaster block
+                spellcasting: abilityAbbreviationMapping[statBlock.spellcasting?.spellcastingAbility ?? ""],
+            },
+            details: {
+                biography: {
+                    value: monster.description
+                },
+                type: {
+                    value: statBlock.type,
+                    subType: statBlock.subType
+                },
+                cr: statBlock.challenge,
+                spellLevel: statBlock.challenge >=1 ? statBlock.challenge : 1
+            },
+            traits: {
+                size: sizeAbbreviationMapping[statBlock.size],
+                di: statBlock.damageImmunities?.join(","),
+                dr: statBlock.damageResistances?.join(","),
+                dv: statBlock.damageVulnerabilities?.join(","),
+                ci: statBlock.conditionImmunities?.join(","),
+                languages: {
+                    value: statBlock.languages || []
                 }
             },
             skills: {
@@ -370,14 +410,6 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
                     ability: "wis"
                 }
             },
-            details: {
-                type: {
-                    value: statBlock.type,
-                    subType: statBlock.subType
-                },
-                cr: statBlock.challenge,
-                spellLevel: statBlock.challenge >=1 ? statBlock.challenge : 1
-            },
             spells: spellSlots,
         },
         items: [
@@ -386,6 +418,7 @@ export const getDnD5eActorData = (monsterData: TacMonster): Partial<ActorCreatio
             ...spells
         ]
     };
+    return actorData;
 };
 
 const abilityAbbreviationMapping: Record<string, string> = {

@@ -14,17 +14,8 @@ const fs = require('fs');
 function getEntries() {
     //Default required entry points
     const list = {
-        "index": {import: './src/index.ts'},
-        //"styles/calendar": './src/styles/index.scss'
+        "index": {import: './src/index.ts'}
     };
-
-    //Get all the additional theme files as entry points
-    // https://github.com/vigoren/foundryvtt-simple-calendar/tree/main/src/styles/themes
-    /*fs.readdirSync('./src/styles/themes/').forEach((file) => {
-        if(file.endsWith('.scss') && !file.startsWith('_')){
-            list[`styles/themes/${file.replace('.scss', '')}`] = `./src/styles/themes/${file}`;
-        }
-    });*/
     return list;
 }
 
@@ -59,7 +50,8 @@ module.exports = {
                 { context: './src/', from : '**/*.hbs', to : '[path][name].hbs' },
                 { context: './', from : 'README.md', to : './' },
                 { context: './', from : 'LICENSE', to : './' },
-                //{ context: './src/assets', from: '**/*.png', to: './assets/'}
+                // Images aren't needed in the build as we're using external URLs
+                // { context: './src/assets', from: '**/*.{png,jpg,jpeg,gif,svg,webp}', to: './'}
             ]
         }),
         new MangleCssClassPlugin({

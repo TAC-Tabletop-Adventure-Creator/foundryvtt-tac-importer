@@ -1,4 +1,4 @@
-export const downloadAndSaveImage = async (url: string | null, type: 'monster' | 'scene') => {
+export const downloadAndSaveImage = async (url: string | null, type: 'monster' | 'scene' | 'note') => {
     if (!url) throw new Error("Missing URL.");
 
     const match = url.match(/\/([\w-]+)\.(\w+)$/);
@@ -22,7 +22,8 @@ export const downloadAndSaveImage = async (url: string | null, type: 'monster' |
     const file = new File([blob], `${uuid}.${extension}`, { type: blob.type });
 
     // Upload the image to Foundry's storage
-    const result = await FilePicker.upload("data", folderPath, file);
+    // @ts-ignore
+    const result = await foundry.applications.apps.FilePicker.upload("data", folderPath, file);
 
     // Check for a valid result and return the path if available
     if (result && typeof result === "object" && "path" in result) {
@@ -39,7 +40,8 @@ const ensureDirectoryExists = async (path: string) => {
     for (const part of parts) {
         currentPath += part + '/';
         try {
-            await FilePicker.createDirectory("data", currentPath);
+            // @ts-ignore
+            await foundry.applications.apps.FilePicker.createDirectory("data", currentPath);
         } catch (error: any) {
             if (!error.message.includes("EEXIST")) {
                 console.error(`Error creating directory: ${currentPath}`, error);
