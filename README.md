@@ -31,11 +31,6 @@ The importer will fetch your adventure data and import all scenes, monsters, and
 
 ### Local Setup
 
-Note: we are currently snapshotting the main branch for v13 types. re-run this to update
-```shell
-pnpm add -D fvtt-types@github:League-of-Foundry-Developers/foundry-vtt-types#main
-```
-
 Install deps:
 ```shell
 pnpm install
