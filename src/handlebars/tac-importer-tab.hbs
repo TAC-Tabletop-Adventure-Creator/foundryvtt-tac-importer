@@ -1,13 +1,13 @@
 <header class="directory-header">
     <div class="header-actions action-buttons" style="width: 100%; display: flex; justify-content: center; align-items: center; padding: 10px 0 7px;">
-        <img src="https://www.tabletopadventurecreator.com/tac-logo.webp" alt="TAC" 
+        <img src="https://www.tabletopadventurecreator.com/tac-logo.webp" alt="TAC"
              style="width: 32px; height: 32px; border-radius: 4px; margin-right: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
-        <h3 class="noborder" style="text-align: center; 
-                                   background: linear-gradient(135deg, #0D4B43 0%, #1A856D 50%, #38A899 100%); 
-                                   -webkit-background-clip: text; 
-                                   background-clip: text; 
-                                   color: transparent; 
-                                   font-weight: 800; 
+        <h3 class="noborder" style="text-align: center;
+                                   background: linear-gradient(135deg, #0D4B43 0%, #1A856D 50%, #38A899 100%);
+                                   -webkit-background-clip: text;
+                                   background-clip: text;
+                                   color: transparent;
+                                   font-weight: 800;
                                    font-size: 1.4em;
                                    font-family: var(--font-primary, 'Signika', sans-serif);
                                    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
@@ -16,329 +16,204 @@
             TAC Importer
         </h3>
     </div>
-    <style>
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 </header>
 
 <section class="directory-list" style="display: flex; flex-direction: column; height: 100%;">
-    <!-- Wrapper for scrollable content and footer -->
     <div style="display: flex; flex-direction: column; height: 100%; min-height: 0;">
         <!-- Scrollable content -->
         <div class="content" style="padding: 12px 12px 12px; overflow-y: auto; flex: 1 1 auto; min-height: 0;">
             <!-- Title section -->
-            <p style="font-weight: 600; 
-                      margin-bottom: 14px; 
-                      color: #1A856D; 
-                      text-align: center; 
+            <p style="font-weight: 600;
+                      margin-bottom: 14px;
+                      color: #1A856D;
+                      text-align: center;
                       font-size: 1.1em;
                       font-family: var(--font-primary, 'Signika', sans-serif);
                       letter-spacing: 0.5px;">
-                One-Step Adventure Import
+                Import Assets by ID
             </p>
-            
+
             <!-- What's included section -->
-            <div style="background: rgba(13, 75, 67, 0.05); 
-                        border-left: 3px solid #1A856D; 
+            <div style="background: rgba(13, 75, 67, 0.05);
+                        border-left: 3px solid #1A856D;
                         padding: 14px;
                         border-radius: 0 8px 8px 0;
                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
                         margin-bottom: 16px;">
-                <p style="color: #1A856D; 
-                          font-size: 0.85em; 
+                <p style="color: #1A856D;
+                          font-size: 0.85em;
                           margin: 0 0 10px;
                           font-family: var(--font-primary, 'Signika', sans-serif);
                           font-weight: 600;
                           display: flex;
                           align-items: center;">
                     <i class="fas fa-check-circle" style="color: #38A899; margin-right: 6px;"></i>
-                    What's Imported:
+                    Supported Imports:
                 </p>
-                <ul style="list-style-type: none; 
-                           margin: 0; 
-                           padding: 0 0 0 18px; 
+                <ul style="list-style-type: none;
+                           margin: 0;
+                           padding: 0 0 0 18px;
                            color: var(--color-text-light-highlight);
                            font-size: 0.8em;
                            font-family: var(--font-primary, 'Signika', sans-serif);">
                     <li style="margin-bottom: 6px; display: flex; align-items: center;">
-                        <i class="fas fa-map" style="color: #38A899; width: 14px; margin-right: 6px;"></i> 
-                        <span><strong>Scenes</strong></span>
+                        <i class="fas fa-dragon" style="color: #38A899; width: 14px; margin-right: 6px;"></i>
+                        <span><strong>Monsters</strong> (actors with stats)</span>
                     </li>
                     <li style="margin-bottom: 6px; display: flex; align-items: center;">
-                        <i class="fas fa-dragon" style="color: #38A899; width: 14px; margin-right: 6px;"></i> 
-                        <span><strong>Monsters</strong> (actors)</span>
+                        <i class="fas fa-map" style="color: #38A899; width: 14px; margin-right: 6px;"></i>
+                        <span><strong>Maps</strong> (scenes with walls, lights, doors)</span>
                     </li>
                     <li style="margin-bottom: 6px; display: flex; align-items: center;">
-                        <i class="fas fa-book-open" style="color: #38A899; width: 14px; margin-right: 6px;"></i> 
-                        <span><strong>Notes</strong> (journals)</span>
-                    </li>
-                    <li style="margin-bottom: 6px; display: flex; align-items: center;">
-                        <i class="fas fa-thumbtack" style="color: #38A899; width: 14px; margin-right: 6px;"></i> 
-                        <span><strong>Placements</strong> on scenes</span>
+                        <i class="fas fa-music" style="color: #38A899; width: 14px; margin-right: 6px;"></i>
+                        <span><strong>Audio</strong> (ambient music & sounds)</span>
                     </li>
                     <li style="margin-bottom: 0; display: flex; align-items: flex-start;">
-                        <i class="fas fa-clock" style="color: #38A899; width: 14px; margin-right: 6px; margin-top: 3px;"></i> 
-                        <span><strong>Coming soon:</strong> lights, walls, music</span>
+                        <i class="fas fa-clock" style="color: #38A899; width: 14px; margin-right: 6px; margin-top: 3px;"></i>
+                        <span><strong>Coming soon:</strong> Adventures</span>
                     </li>
                 </ul>
             </div>
-            
-            <!-- Main content area -->
-            <div class="tac-content" style="background: rgba(13, 75, 67, 0.08); 
-                                            border-radius: 8px; 
-                                            padding: 16px; 
-                                            margin-bottom: 18px; 
+
+            <!-- Main import form -->
+            <div class="tac-content" style="background: rgba(13, 75, 67, 0.08);
+                                            border-radius: 8px;
+                                            padding: 16px;
+                                            margin-bottom: 18px;
                                             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
                                             border: 1px solid rgba(38, 107, 93, 0.2);">
-                
-                <div class="form-group">
-                    <label style="display: block; 
-                                  margin-bottom: 8px; 
-                                  color: var(--color-text-light-highlight); 
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label style="display: block;
+                                  margin-bottom: 8px;
+                                  color: var(--color-text-light-highlight);
                                   font-weight: 600;
                                   font-family: var(--font-primary, 'Signika', sans-serif);">
-                        One-Time Token
+                        Asset Type
+                    </label>
+                    <select id="tac-asset-type"
+                            style="width: 100%;
+                                   box-sizing: border-box;
+                                   background: rgba(13, 75, 67, 0.05);
+                                   border: 1px solid #266B5D;
+                                   color: var(--color-text-light-highlight);
+                                   border-radius: 6px;
+                                   padding: 8px 10px;
+                                   font-size: 14px;
+                                   line-height: 1.4;
+                                   height: auto;
+                                   min-height: 38px;
+                                   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+                                   cursor: pointer;
+                                   -webkit-appearance: menulist;
+                                   appearance: menulist;">
+                        <option value="monster">Monster</option>
+                        <option value="map">Map</option>
+                        <option value="audio">Audio</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block;
+                                  margin-bottom: 8px;
+                                  color: var(--color-text-light-highlight);
+                                  font-weight: 600;
+                                  font-family: var(--font-primary, 'Signika', sans-serif);">
+                        Asset ID
                         <span class="notes" style="font-size: 0.8em; opacity: 0.7; margin-left: 5px; font-weight: normal;">(from TAC website)</span>
                     </label>
-                    <input type="text" id="tac-token-input" 
-                           style="width: 100%; 
-                                  background: rgba(13, 75, 67, 0.05); 
-                                  border: 1px solid #266B5D; 
-                                  color: var(--color-text-light-highlight); 
-                                  border-radius: 6px; 
-                                  padding: 10px; 
+                    <input type="text" id="tac-asset-id"
+                           style="width: 100%;
+                                  box-sizing: border-box;
+                                  background: rgba(13, 75, 67, 0.05);
+                                  border: 1px solid #266B5D;
+                                  color: var(--color-text-light-highlight);
+                                  border-radius: 6px;
+                                  padding: 10px;
+                                  font-size: 1em;
                                   margin-bottom: 6px;
                                   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-                                  transition: all 0.2s ease;" 
-                           placeholder="Paste your token here...">
-                    
-                    <div id="import-status" style="min-height: 16px; 
-                                                   font-style: italic; 
-                                                   color: var(--color-text-light-secondary); 
-                                                   margin: 6px 0; 
+                                  transition: all 0.2s ease;"
+                           placeholder="Paste asset ID here...">
+
+                    <div id="import-status" style="min-height: 16px;
+                                                   font-style: italic;
+                                                   color: var(--color-text-light-secondary);
+                                                   margin: 6px 0;
                                                    text-align: center;
                                                    font-family: var(--font-primary, 'Signika', sans-serif);"></div>
-                    
-                    <button type="button" id="import-adventure-start" disabled 
-                            style="width: 100%; 
-                                   padding: 12px; 
-                                   background: linear-gradient(135deg, #1A856D, #0D4B43); 
-                                   border: 1px solid #0D4B43; 
-                                   color: white; 
-                                   border-radius: 6px; 
-                                   cursor: pointer; 
-                                   transition: all 0.2s; 
-                                   display: flex; 
-                                   justify-content: center; 
+
+                    <button type="button" id="tac-import-btn" disabled
+                            style="width: 100%;
+                                   padding: 12px;
+                                   background: linear-gradient(135deg, #1A856D, #0D4B43);
+                                   border: 1px solid #0D4B43;
+                                   color: white;
+                                   border-radius: 6px;
+                                   cursor: pointer;
+                                   transition: all 0.2s;
+                                   display: flex;
+                                   justify-content: center;
                                    align-items: center;
                                    font-weight: bold;
                                    font-family: var(--font-primary, 'Signika', sans-serif);
                                    letter-spacing: 0.5px;
                                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-                                   opacity: 0.85;
-                                   margin-bottom: 12px;">
-                        <i class="fas fa-file-import" style="margin-right: 10px;"></i> Import Adventure
+                                   opacity: 0.5;">
+                        <i class="fas fa-download" style="margin-right: 10px;"></i> Import Asset
                     </button>
                 </div>
             </div>
-            
-            <!-- Import Content Summary (hidden by default) -->
-            <div id="import-summary" style="display: none; 
-                                            background: rgba(13, 75, 67, 0.06); 
-                                            border-radius: 8px; 
-                                            padding: 12px 16px; 
-                                            margin-bottom: 16px; 
-                                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                                            border: 1px solid rgba(38, 107, 93, 0.15);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                    <h3 style="margin: 0; 
-                               font-size: 0.9em; 
-                               color: #1A856D;
-                               font-family: var(--font-primary, 'Signika', sans-serif);">Import Summary</h3>
-                    <span id="adventure-title" style="font-size: 0.8em; 
-                                                    font-weight: 600; 
-                                                    color: var(--color-text-light-highlight);
-                                                    font-style: italic;"></span>
-                </div>
-                
-                <div style="display: grid; 
-                           grid-template-columns: repeat(2, 1fr);
-                           gap: 8px 12px;
-                           margin-top: 8px;">
-                    <!-- Scene count -->
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 24px; 
-                                   height: 24px; 
-                                   border-radius: 4px; 
-                                   background: rgba(26, 133, 109, 0.1); 
-                                   display: flex; 
-                                   align-items: center; 
-                                   justify-content: center;
-                                   margin-right: 8px;
-                                   position: relative;">
-                            <i class="fas fa-map" style="color: #1A856D; font-size: 0.75em;"></i>
-                            <div id="scene-spinner" class="content-spinner" style="display: none; position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; border: 2px solid #38A899; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.7em; color: var(--color-text-light-secondary);">Scenes</div>
-                            <div id="scene-count" style="font-size: 0.85em; font-weight: 600; color: var(--color-text-light-highlight);">-</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Monster count -->
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 24px; 
-                                   height: 24px; 
-                                   border-radius: 4px; 
-                                   background: rgba(26, 133, 109, 0.1); 
-                                   display: flex; 
-                                   align-items: center; 
-                                   justify-content: center;
-                                   margin-right: 8px;
-                                   position: relative;">
-                            <i class="fas fa-dragon" style="color: #1A856D; font-size: 0.75em;"></i>
-                            <div id="monster-spinner" class="content-spinner" style="display: none; position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; border: 2px solid #38A899; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.7em; color: var(--color-text-light-secondary);">Monsters</div>
-                            <div id="monster-count" style="font-size: 0.85em; font-weight: 600; color: var(--color-text-light-highlight);">-</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Note count -->
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 24px; 
-                                   height: 24px; 
-                                   border-radius: 4px; 
-                                   background: rgba(26, 133, 109, 0.1); 
-                                   display: flex; 
-                                   align-items: center; 
-                                   justify-content: center;
-                                   margin-right: 8px;
-                                   position: relative;">
-                            <i class="fas fa-book-open" style="color: #1A856D; font-size: 0.75em;"></i>
-                            <div id="note-spinner" class="content-spinner" style="display: none; position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; border: 2px solid #38A899; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.7em; color: var(--color-text-light-secondary);">Notes</div>
-                            <div id="note-count" style="font-size: 0.85em; font-weight: 600; color: var(--color-text-light-highlight);">-</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Placement count -->
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 24px; 
-                                   height: 24px; 
-                                   border-radius: 4px; 
-                                   background: rgba(26, 133, 109, 0.1); 
-                                   display: flex; 
-                                   align-items: center; 
-                                   justify-content: center;
-                                   margin-right: 8px;
-                                   position: relative;">
-                            <i class="fas fa-thumbtack" style="color: #1A856D; font-size: 0.75em;"></i>
-                            <div id="placement-spinner" class="content-spinner" style="display: none; position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; border: 2px solid #38A899; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                        </div>
-                        <div>
-                            <div style="font-size: 0.7em; color: var(--color-text-light-secondary);">Placements</div>
-                            <div id="placement-count" style="font-size: 0.85em; font-weight: 600; color: var(--color-text-light-highlight);">-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Error section (hidden by default) -->
-            <div id="import-error" style="display: none; 
-                                         background: rgba(220, 53, 69, 0.08); 
-                                         border-left: 3px solid #dc3545; 
-                                         padding: 14px;
-                                         border-radius: 0 8px 8px 0;
-                                         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-                                         margin-bottom: 16px;
-                                         max-height: 150px;
-                                         overflow: hidden;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <h3 style="margin: 0; 
-                               font-size: 0.9em; 
-                               color: #dc3545;
-                               font-family: var(--font-primary, 'Signika', sans-serif);
-                               display: flex;
-                               align-items: center;">
-                        <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
-                        Error Details
-                    </h3>
-                    <button id="copy-error" style="background: none;
-                                                  border: none;
-                                                  color: #dc3545;
-                                                  padding: 4px 8px;
-                                                  border-radius: 4px;
-                                                  cursor: pointer;
-                                                  display: flex;
-                                                  align-items: center;
-                                                  font-size: 0.8em;">
-                        <i class="fas fa-copy" style="margin-right: 4px;"></i>
-                        Copy to Clipboard
-                    </button>
-                </div>
-                <div id="error-message" style="font-family: var(--font-primary, 'Signika', sans-serif);
-                                             font-size: 0.85em;
-                                             color: var(--color-text-light-highlight);
-                                             white-space: pre-wrap;
-                                             margin-top: 8px;
-                                             max-height: 80px;
-                                             overflow-y: auto;
-                                             background: rgba(220, 53, 69, 0.05);
-                                             padding: 8px;
-                                             border-radius: 4px;">
-                    Error details will appear here
-                </div>
+
+            <!-- Quick access tip -->
+            <div style="background: rgba(56, 168, 153, 0.1);
+                        border-radius: 6px;
+                        padding: 12px;
+                        margin-bottom: 16px;
+                        border: 1px solid rgba(56, 168, 153, 0.2);">
+                <p style="margin: 0;
+                          font-size: 0.8em;
+                          color: var(--color-text-light-highlight);
+                          font-family: var(--font-primary, 'Signika', sans-serif);">
+                    <i class="fas fa-lightbulb" style="color: #38A899; margin-right: 6px;"></i>
+                    <strong>Tip:</strong> You can also import directly from the Actor, Scene, or Playlist directories using the "Import from TAC" button.
+                </p>
             </div>
         </div>
-        
+
         <!-- Footer at the bottom -->
         <div style="background: rgba(13, 75, 67, 0.05);
-                     border-top: 1px solid rgba(13, 75, 67, 0.2);
-                      padding: 12px;
-                     margin-top: auto;
-                     flex-shrink: 0;
-                     border-bottom: 3px solid #1A856D;
-                     box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <div style="display: flex; 
+                    border-top: 1px solid rgba(13, 75, 67, 0.2);
+                    padding: 12px;
+                    margin-top: auto;
+                    flex-shrink: 0;
+                    border-bottom: 3px solid #1A856D;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <div style="display: flex;
                         justify-content: space-between;
                         align-items: center;
                         font-family: var(--font-primary, 'Signika', sans-serif);
                         font-size: 0.8em;
                         line-height: 1.2;
                         width: 100%;">
-                <a href="https://foundryvtt.com/packages/foundryvtt-tac-importer" 
-                   target="_blank" 
-                   style="text-decoration: none; 
+                <a href="https://foundryvtt.com/packages/foundryvtt-tac-importer"
+                   target="_blank"
+                   style="text-decoration: none;
                           color: #1A856D;
                           font-weight: bold;
                           display: flex;
                           align-items: center;
                           transition: color 0.2s ease;">
-                    <i class="fas fa-dice-d20" style="margin-right: 5px;"></i> 
+                    <i class="fas fa-dice-d20" style="margin-right: 5px;"></i>
                     Official TAC Module
                 </a>
-                <a href="#" 
-                   style="text-decoration: none; 
-                          color: #1A856D;
-                          font-weight: bold;
-                          display: flex;
-                          align-items: center;
-                          white-space: nowrap;
-                          font-size: 0.9em;">
-                    Need Help? 
-                    <i class="fas fa-arrow-up-right" style="margin-left: 3px; font-size: 0.8em;"></i>
-                </a>
+                <span style="color: var(--color-text-light-secondary); font-size: 0.9em;">
+                    v2.0.0
+                </span>
             </div>
         </div>
-        
-        <!-- Extra padding div to ensure footer visibility for some reason without this the footer goes below the screen boundry -->
+
+        <!-- Extra padding div for footer visibility -->
         <div style="height: 50px; flex-shrink: 0; background: transparent;"></div>
     </div>
-</section> 
+</section>
