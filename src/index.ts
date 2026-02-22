@@ -2,19 +2,31 @@ import { Logger } from './classes/logging';
 import { MonsterImporter } from './importers/monster';
 import { MapImporter } from './importers/map';
 import { AudioImporter } from './importers/audio';
+import { AdventureImporter } from './importers/adventure';
 import { MODULE_ID } from './settings';
+import type { ImportProgress } from './types';
 
 const importers = {
   monster: new MonsterImporter(),
   map: new MapImporter(),
   audio: new AudioImporter(),
+  adventure: new AdventureImporter(),
 };
 
-type AssetType = 'monster' | 'map' | 'audio';
+type AssetType = 'monster' | 'map' | 'audio' | 'adventure';
 
-async function handleImport(type: AssetType, id: string): Promise<void> {
+async function handleImport(
+  type: AssetType,
+  id: string,
+  onProgress?: (p: ImportProgress) => void
+): Promise<void> {
   try {
-    const result = await importers[type].importById(id);
+    let result;
+    if (type === 'adventure') {
+      result = await importers.adventure.importById(id, onProgress);
+    } else {
+      result = await importers[type].importById(id);
+    }
     if (result.success) {
       ui.notifications.info(`Imported ${type} successfully`);
     } else {
@@ -121,7 +133,14 @@ Hooks.once('ready', () => {
             if (importButton) importButton.disabled = true;
 
             try {
-              await handleImport(type, id);
+              // For adventures, provide progress callback
+              const onProgress = type === 'adventure' && statusElement
+                ? (progress: ImportProgress) => {
+                    statusElement.textContent = progress.message;
+                  }
+                : undefined;
+
+              await handleImport(type, id, onProgress);
               if (statusElement) statusElement.textContent = 'Import complete!';
               if (idInput) idInput.value = '';
             } catch {
