@@ -3,6 +3,8 @@ import { fetchAsset } from '../utils/api';
 import { downloadImage } from '../utils/files';
 import { parseWalls, parseLights, parseDoors } from './uvtt';
 
+const MODULE_ID = 'tac-importer';
+
 export class MapImporter {
   async importById(id: string): Promise<ImportResult> {
     const data = await fetchAsset<TacMapExport>('/export/map', id, 'format=api');
@@ -17,23 +19,52 @@ export class MapImporter {
     // Download image
     const img = await downloadImage(data.image, 'maps', data.name || `map-${Date.now()}`);
 
-    // Create scene
-    const scene = await Scene.create({
-      name: data.name || 'Imported Map',
-      width,
-      height,
-      grid: { size: ppg },
-      background: { src: img },
-      padding: 0,
-    });
+    // Find existing by TAC ID
+    const existing = game.scenes.find(
+      s => s.getFlag(MODULE_ID, 'tacId') === data.id
+    );
 
-    // Add walls + doors
+    let scene: Scene;
+    if (existing) {
+      // Update existing scene
+      await existing.update({
+        name: data.name || 'Imported Map',
+        width,
+        height,
+        grid: { size: ppg },
+        background: { src: img },
+      });
+
+      // Delete existing walls and lights (NOT tokens - those are handled by adventure importer)
+      const wallIds = existing.walls.map(w => w.id);
+      const lightIds = existing.lights.map(l => l.id);
+
+      if (wallIds.length) await existing.deleteEmbeddedDocuments('Wall', wallIds);
+      if (lightIds.length) await existing.deleteEmbeddedDocuments('AmbientLight', lightIds);
+
+      scene = existing;
+    } else {
+      // Create new scene
+      scene = await Scene.create({
+        name: data.name || 'Imported Map',
+        width,
+        height,
+        grid: { size: ppg },
+        background: { src: img },
+        padding: 0,
+      });
+
+      // Set TAC ID flag
+      await scene.setFlag(MODULE_ID, 'tacId', data.id);
+    }
+
+    // Add walls + doors (fresh)
     const walls = [...parseWalls(data, ppg), ...parseDoors(data, ppg)];
     if (walls.length) {
       await scene.createEmbeddedDocuments('Wall', walls);
     }
 
-    // Add lights
+    // Add lights (fresh)
     const lights = parseLights(data, ppg);
     if (lights.length) {
       await scene.createEmbeddedDocuments('AmbientLight', lights);

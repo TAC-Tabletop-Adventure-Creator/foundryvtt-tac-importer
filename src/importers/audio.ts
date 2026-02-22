@@ -2,6 +2,7 @@ import type { TacAudioExport, ImportResult } from '../types';
 import { fetchAsset } from '../utils/api';
 import { downloadAudio } from '../utils/files';
 
+const MODULE_ID = 'tac-importer';
 const PLAYLIST_NAME = 'TAC Imports';
 const PLAYLIST_MODE_DISABLED = -1;  // Individual track control (soundboard style)
 
@@ -24,6 +25,8 @@ export class AudioImporter {
         mode: PLAYLIST_MODE_DISABLED,  // Individual track control (no auto-play)
         fade: 500,  // 500ms fade default
       });
+      // Set flag on newly created playlist
+      await playlist.setFlag(MODULE_ID, 'tacId', PLAYLIST_NAME);
     }
 
     // Check if sound already exists (by name)
@@ -35,7 +38,7 @@ export class AudioImporter {
         path,
         description: data.description,
       }]);
-      return { success: true, entity: existing };
+      return { success: true, entity: existing, path };
     }
 
     // Create new sound
@@ -48,6 +51,6 @@ export class AudioImporter {
       fade: 1000,         // 1 second fade for smooth transitions
     }]) as PlaylistSound[];
 
-    return { success: true, entity: sound };
+    return { success: true, entity: sound, path };
   }
 }
